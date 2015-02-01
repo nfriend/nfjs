@@ -7,7 +7,7 @@ First, define an object to serve as your ViewModel:
 
 ```` JavaScript
 function ViewModel() {
-    this.message = 'Hello world!';
+  this.message = 'Hello world!';
 }
 ````
 
@@ -46,6 +46,7 @@ function SimpleText() {
   this.initialize = function (element, value) {
       element.innerHTML = value;
   };
+}
 ````
 
 Before using a custom directive, be sure to register it with your `NF` instance:
