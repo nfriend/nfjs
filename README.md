@@ -1,2 +1,2 @@
 # nfjs
-A client-side binding library, based on Knockout and Vue.  Built to teach myself how modern JavaScript frameworks are implemented.  Written in TypeScript.
+A naive attempt at a client-side binding library, based on Knockout and Vue.  Built to teach myself how JavaScript binding frameworks are implemented.  Written in TypeScript.
