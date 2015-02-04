@@ -21,7 +21,7 @@ nf.run();
 In your view, bind to properties on your ViewModel using the directive syntax:
 
 ```` HTML
-<p nf-text="'Here is a message for you: ' + this.message"></p>
+<p nf-text="'Here is a message for you: ' + message"></p>
 ````
 
 The result:
