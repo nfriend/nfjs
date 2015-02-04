@@ -10,9 +10,6 @@ var NF = (function () {
         // add default bindings
         this.addDirective(new NFJS.Directives.ForEach());
         this.addDirective(new NFJS.Directives.Text());
-        viewModel['_evaluateBinding'] = function (expression) {
-            return eval(expression);
-        };
     }
     NF.prototype.addDirective = function (directive) {
         this.directives.push(directive);
@@ -22,7 +19,11 @@ var NF = (function () {
         var directiveReferences = this.getAllDirectiveReferencesRecursively(rootElement);
         for (var i = 0; i < directiveReferences.length; i++) {
             var currentDirectiveReference = directiveReferences[i];
-            var computedExpression = this.baseViewModel._evaluateBinding(currentDirectiveReference.directiveExpression);
+            var computedExpression;
+            // TypeScript doesn't allow "with"... or does it.  TODO: make a proper expression evaluater.  This makes me die a little bit inside.
+            eval("with (this.baseViewModel) { \
+                     computedExpression = eval(currentDirectiveReference.directiveExpression); \
+                 }");
             currentDirectiveReference.directive.initialize(currentDirectiveReference.element, computedExpression);
         }
     };
