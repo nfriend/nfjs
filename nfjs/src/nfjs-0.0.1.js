@@ -10,6 +10,9 @@ var NF = (function () {
         // add default bindings
         this.addDirective(new NFJS.Directives.ForEach());
         this.addDirective(new NFJS.Directives.Text());
+        viewModel['_evaluateBinding'] = function (expression) {
+            return eval(expression);
+        };
     }
     NF.prototype.addDirective = function (directive) {
         this.directives.push(directive);
@@ -19,9 +22,7 @@ var NF = (function () {
         var directiveReferences = this.getAllDirectiveReferencesRecursively(rootElement);
         for (var i = 0; i < directiveReferences.length; i++) {
             var currentDirectiveReference = directiveReferences[i];
-            var computedExpression = function () {
-                return eval(currentDirectiveReference.directiveExpression);
-            }.apply(this.baseViewModel);
+            var computedExpression = this.baseViewModel._evaluateBinding(currentDirectiveReference.directiveExpression);
             currentDirectiveReference.directive.initialize(currentDirectiveReference.element, computedExpression);
         }
     };
