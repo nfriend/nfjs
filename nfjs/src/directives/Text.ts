@@ -1,8 +1,7 @@
-﻿module NFJS.Directives {
-    export class Text implements Directive {
+﻿/// <reference path="DirectiveBase.ts" />
 
-        name = 'nf-text';
-
+module NFJS.Directives {
+    export class Text extends DirectiveBase {
         initialize(element: HTMLElement, value: any) {
             element.innerHTML = value;
         }

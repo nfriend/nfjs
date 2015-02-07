@@ -2,72 +2,57 @@
 
 interface DirectiveReference {
     element: Element;
-    directive: NFJS.Directives.Directive;
+    directive: NFJS.Directives.DirectiveBase;
     directiveExpression: string;
 }
 
 class NF {
+
+    private baseViewModel;
+    public static Directives: Array<NFJS.Directives.DirectiveBase> = [];
+
     constructor(viewModel: any) {
 
         // TODO: handle no-conflict jQuery
         if (typeof $ === 'undefined') {
             throw 'jQuery not loaded! NF.js requires jQuery >= 2.0.0.'
+        } else if (parseInt($.fn.jquery.charAt(0), 10) < 2) {
+            throw 'An old version of jQuery was loaded! NF.js requires jQuery >= 2.0.0.'
         }
 
         this.baseViewModel = viewModel;
 
-        // add default bindings
-        this.addDirective(new NFJS.Directives.ForEach());
-        this.addDirective(new NFJS.Directives.Text());
-        this.addDirective(new NFJS.Directives.Click());
-        this.addDirective(new NFJS.Directives.Event());
-        this.addDirective(new NFJS.Directives.Value());
+        // add default bindings, if they haven't already been defined
+        if (NF.Directives['nf-foreach'] === undefined) {
+            NF.Directives['nf-foreach'] = new NFJS.Directives.ForEach();
+        }
+        if (NF.Directives['nf-text'] === undefined) {
+            NF.Directives['nf-text'] = new NFJS.Directives.Text();
+        }
+        if (NF.Directives['nf-click'] === undefined) {
+            NF.Directives['nf-click'] = new NFJS.Directives.Click();
+        }
+        if (NF.Directives['nf-event'] === undefined) {
+            NF.Directives['nf-event'] = new NFJS.Directives.Event();
+        }
+        if (NF.Directives['nf-value'] === undefined) {
+            NF.Directives['nf-value'] = new NFJS.Directives.Value();
+        }
 
         // prepare the ViewModel with getters/setters to allow for property change notification
-        NFJS.ViewModelPreparer.prepare(viewModel);
+        NFJS.ViewModelPreparer.prepare(this.baseViewModel);
     }
 
-    private directives: Array<NFJS.Directives.Directive> = [];
-    private baseViewModel;
-
-    public addDirective(directive: NFJS.Directives.Directive): void {
-        this.directives.push(directive);
-    }
-
-    public run(): void {
-        var rootElement = document.getElementsByTagName('html')[0];
-        var directiveReferences = this.getAllDirectiveReferencesRecursively(rootElement);
-        for (var i = 0; i < directiveReferences.length; i++) {
-            var currentDirectiveReference = directiveReferences[i];
-
-            var computedExpression;
-            // TypeScript doesn't allow "with"... or does it.  TODO: make a proper expression evaluater.  This makes me die a little bit inside.
-            eval(
-                "with (this.baseViewModel) { \
-                     computedExpression = eval('(function() { return ' + currentDirectiveReference.directiveExpression + '; })()'); \
-                 }"
-                );
-
-            currentDirectiveReference.directive.initialize(currentDirectiveReference.element, computedExpression);
-        }
-    }
-
-    private getAllDirectiveReferencesRecursively(rootElement: Element, directiveReferences?: Array<DirectiveReference>): Array<DirectiveReference> {
-        directiveReferences = directiveReferences || [];
-        for (var i = 0; i < this.directives.length; i++) {
-            if (rootElement.hasAttribute(this.directives[i].name)) {
-                directiveReferences.push({
-                    element: rootElement,
-                    directive: this.directives[i],
-                    directiveExpression: rootElement.getAttribute(this.directives[i].name)
-                });
+    public run(rootElementId?: string): void {
+        if (rootElementId) {
+            var rootElement = $('#' + rootElementId)[0];
+            if (!rootElement) {
+                throw 'Unable to initialize bindings!  A root element with ID of "' + rootElementId + '" doesn\'t seem to exist.';
             }
+        } else {
+            var rootElement = <HTMLElement>document.getElementsByTagName('html')[0];
         }
 
-        $(rootElement).children().each((i, elem) => {
-            this.getAllDirectiveReferencesRecursively(elem, directiveReferences);
-        });
-
-        return directiveReferences;
+        NFJS.Parser.parse(this.baseViewModel, rootElement);
     }
 }

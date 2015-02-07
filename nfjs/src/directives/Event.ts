@@ -1,7 +1,7 @@
-﻿module NFJS.Directives {
-    export class Event implements Directive {
-        name = 'nf-event';
+﻿/// <reference path="DirectiveBase.ts" />
 
+module NFJS.Directives {
+    export class Event extends DirectiveBase {
         initialize(element: HTMLElement, value: any) {
 
             if (!(value.event && value.handler)) {

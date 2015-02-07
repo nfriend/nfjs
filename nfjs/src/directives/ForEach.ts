@@ -1,7 +1,7 @@
-﻿module NFJS.Directives {
-    export class ForEach implements Directive {
-        name = 'nf-foreach';
+﻿/// <reference path="DirectiveBase.ts" />
 
+module NFJS.Directives {
+    export class ForEach extends DirectiveBase {
         initialize(element: HTMLElement, value: any) {
             var $element = $(element);
             var template = $element.html();
@@ -12,5 +12,6 @@
             }
         }
         update(element: HTMLElement, value: any) { }
+        controlsDescendantBindings = true;
     }
 } 

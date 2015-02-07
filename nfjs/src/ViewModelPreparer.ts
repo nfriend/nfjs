@@ -6,11 +6,11 @@
         // prepares a ViewModel for databinding by replacing all properties currently on the viewmodel with
         // properties defined with getters and setters
         static prepare = (viewModel: any): void => {
-            // backing fields will be stored on the _privateMembers property
-            viewModel._privateMembers = {};
+            // backing fields will be stored on the _data property
+            viewModel._data = {};
 
             for (var property in viewModel) {
-                if (property === '_privateMembers') {
+                if (property === '_data') {
                     continue;
                 }
 
@@ -25,17 +25,17 @@
             if (viewModel.hasOwnProperty(property)) {
 
                 // set the initial value
-                viewModel._privateMembers[property] = viewModel[property];
+                viewModel._data[property] = viewModel[property];
 
                 // redefine the property with a getter and setter
                 Object.defineProperty(viewModel, property, {
                     get: function () {
                         console.log('Got value of property: ' + property);
-                        return viewModel._privateMembers[property];
+                        return viewModel._data[property];
                     },
                     set: function (newValue) {
                         console.log(property + ' set to new value: ' + newValue);
-                        viewModel._privateMembers[property] = newValue;
+                        viewModel._data[property] = newValue;
                     }
                 });
 
