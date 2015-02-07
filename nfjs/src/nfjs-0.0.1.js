@@ -182,6 +182,10 @@ var NFJS;
                         viewModel._privateMembers[property] = newValue;
                     }
                 });
+                // recursively apply this preparation step to ViewModel sub-properties
+                if (typeof viewModel[property] === 'object') {
+                    ViewModelPreparer.prepare(viewModel[property]);
+                }
             }
         };
         // prepares a ViewModel for databinding by replacing all properties currently on the viewmodel with

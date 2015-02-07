@@ -16,6 +16,14 @@
         _this.firstName = 'John';
         _this.lastName = 'Doe';
     }
+
+    _this.complexObject = {
+        aKey: {
+            anotherKey: {
+                finallyTheValue: 'Hello there.'
+            }
+        }
+    }
 }
 
 var nf = new NF(new DemoViewModel());

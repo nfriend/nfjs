@@ -38,6 +38,11 @@
                         viewModel._privateMembers[property] = newValue;
                     }
                 });
+
+                // recursively apply this preparation step to ViewModel sub-properties
+                if (typeof viewModel[property] === 'object') {
+                    ViewModelPreparer.prepare(viewModel[property]);
+                }
             }
         }
     }

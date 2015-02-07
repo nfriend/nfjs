@@ -13,8 +13,7 @@
     <button nf-click="clickMeHandler">Click me</button>
     <button nf-event="{ event: 'mousedown', handler: clickMeTooMouseDownHandler }">Click me, too</button>
 
-    <br />
-    <br />
+    <p nf-text="'Here\'s an example of a complex binding: ' + complexObject.aKey.anotherKey.finallyTheValue"></p>
 
     First name: <input nf-value="firstName" />
     Last name: <input nf-value="lastName" />
