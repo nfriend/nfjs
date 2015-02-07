@@ -188,6 +188,7 @@ var NFJS;
                 var $containerElement = $(containerElement);
                 $containerElement.html(template);
                 if (replaceContainer) {
+                    throw 'The replaceContainer parameters is not yet implemented';
                     $containerElement.contents().unwrap();
                 }
             };

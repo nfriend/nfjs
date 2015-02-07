@@ -38,6 +38,7 @@ module NFJS.Directives {
             $containerElement.html(template);
 
             if (replaceContainer) {
+                throw 'The replaceContainer parameters is not yet implemented';
                 $containerElement.contents().unwrap();
             }
         }
