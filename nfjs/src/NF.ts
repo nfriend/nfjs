@@ -19,6 +19,12 @@ class NF {
         // add default bindings
         this.addDirective(new NFJS.Directives.ForEach());
         this.addDirective(new NFJS.Directives.Text());
+        this.addDirective(new NFJS.Directives.Click());
+        this.addDirective(new NFJS.Directives.Event());
+        this.addDirective(new NFJS.Directives.Value());
+
+        // prepare the ViewModel with getters/setters to allow for property change notification
+        NFJS.ViewModelPreparer.prepare(viewModel);
     }
 
     private directives: Array<NFJS.Directives.Directive> = [];
@@ -38,7 +44,7 @@ class NF {
             // TypeScript doesn't allow "with"... or does it.  TODO: make a proper expression evaluater.  This makes me die a little bit inside.
             eval(
                 "with (this.baseViewModel) { \
-                     computedExpression = eval(currentDirectiveReference.directiveExpression); \
+                     computedExpression = eval('(function() { return ' + currentDirectiveReference.directiveExpression + '; })()'); \
                  }"
                 );
 

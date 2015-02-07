@@ -81,10 +81,14 @@
   <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="src\directives\Value.ts" />
+    <TypeScriptCompile Include="src\directives\Event.ts" />
     <TypeScriptCompile Include="src\directives\Directive.ts" />
+    <TypeScriptCompile Include="src\directives\Click.ts" />
     <TypeScriptCompile Include="src\directives\ForEach.ts" />
     <TypeScriptCompile Include="src\directives\Text.ts" />
     <TypeScriptCompile Include="src\NF.ts" />
+    <TypeScriptCompile Include="src\ViewModelPreparer.ts" />
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <PropertyGroup>

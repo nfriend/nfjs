@@ -10,6 +10,17 @@
 
     <p nf-text="'Here is a message for you: ' + message"></p>
 
+    <button nf-click="clickMeHandler">Click me</button>
+    <button nf-event="{ event: 'mousedown', handler: clickMeTooMouseDownHandler }">Click me, too</button>
+
+    <br />
+    <br />
+
+    First name: <input nf-value="firstName" />
+    Last name: <input nf-value="lastName" />
+    <p nf-text="'Hello, ' + firstName + ' ' + lastName"></p>
+    <button nf-click="changeName">Change Name</button>
+
     <script type="text/javascript" src="lib/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="../src/nfjs-0.0.1.js"></script>
     <script type="text/javascript" src="demo.js"></script>
