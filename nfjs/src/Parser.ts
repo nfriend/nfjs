@@ -4,7 +4,7 @@
 
     export class Parser {
 
-        public static parse(viewModel: any, rootElement: Element) {
+        public static parseElementAndChildren(viewModel: any, rootElement: Element) {
             for (var directiveName in NF.Directives) {
                 if (NF.Directives.hasOwnProperty(directiveName)) {
                     if (rootElement.hasAttribute(directiveName)) {
@@ -26,7 +26,7 @@
             }
 
             $(rootElement).children().each((i, elem) => {
-                this.parse(viewModel, elem);
+                this.parseElementAndChildren(viewModel, elem);
             });
         }
     }

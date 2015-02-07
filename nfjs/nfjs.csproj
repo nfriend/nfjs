@@ -63,7 +63,6 @@
     <Content Include="demo\index.html" />
     <Content Include="demo\lib\jquery-2.1.3.min.js" />
     <Content Include="src\nfjs-0.0.1.js" />
-    <Content Include="src\test.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +88,7 @@
     <TypeScriptCompile Include="src\directives\ForEach.ts" />
     <TypeScriptCompile Include="src\directives\Text.ts" />
     <TypeScriptCompile Include="src\NF.ts" />
+    <TypeScriptCompile Include="src\Observer.ts" />
     <TypeScriptCompile Include="src\Parser.ts" />
     <TypeScriptCompile Include="src\ViewModelPreparer.ts" />
     <TypeScriptCompile Include="_references.ts" />

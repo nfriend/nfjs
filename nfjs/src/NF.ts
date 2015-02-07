@@ -56,6 +56,6 @@ class NF {
             var rootElement = <HTMLElement>document.getElementsByTagName('html')[0];
         }
 
-        NFJS.Parser.parse(this.baseViewModel, rootElement);
+        NFJS.Parser.parseElementAndChildren(this.baseViewModel, rootElement);
     }
 }

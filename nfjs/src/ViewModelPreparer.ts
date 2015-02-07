@@ -1,4 +1,6 @@
-﻿module NFJS {
+﻿/// <reference path="Observer.ts" />
+
+module NFJS {
     'use strict';
 
     export class ViewModelPreparer {
@@ -6,8 +8,11 @@
         // prepares a ViewModel for databinding by replacing all properties currently on the viewmodel with
         // properties defined with getters and setters
         static prepare = (viewModel: any): void => {
+
             // backing fields will be stored on the _data property
             viewModel._data = {};
+
+            viewModel._data._observer = new NFJS.Observer();
 
             for (var property in viewModel) {
                 if (property === '_data') {

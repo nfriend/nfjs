@@ -41,7 +41,7 @@ var NF = (function () {
         else {
             var rootElement = document.getElementsByTagName('html')[0];
         }
-        NFJS.Parser.parse(this.baseViewModel, rootElement);
+        NFJS.Parser.parseElementAndChildren(this.baseViewModel, rootElement);
     };
     NF.Directives = [];
     return NF;
@@ -243,12 +243,24 @@ var NFJS;
 })(NFJS || (NFJS = {}));
 var NFJS;
 (function (NFJS) {
+    'use strict';
+    var Observer = (function () {
+        function Observer() {
+        }
+        Observer.prototype.notifyPropertyChanged = function (propertyName) {
+        };
+        return Observer;
+    })();
+    NFJS.Observer = Observer;
+})(NFJS || (NFJS = {}));
+var NFJS;
+(function (NFJS) {
     // don't use strict mode here, because our temporary expression evaluator relies on the "with" keyword
     // 'use strict';
     var Parser = (function () {
         function Parser() {
         }
-        Parser.parse = function (viewModel, rootElement) {
+        Parser.parseElementAndChildren = function (viewModel, rootElement) {
             var _this = this;
             for (var directiveName in NF.Directives) {
                 if (NF.Directives.hasOwnProperty(directiveName)) {
@@ -264,13 +276,14 @@ var NFJS;
                 }
             }
             $(rootElement).children().each(function (i, elem) {
-                _this.parse(viewModel, elem);
+                _this.parseElementAndChildren(viewModel, elem);
             });
         };
         return Parser;
     })();
     NFJS.Parser = Parser;
 })(NFJS || (NFJS = {}));
+/// <reference path="Observer.ts" />
 var NFJS;
 (function (NFJS) {
     'use strict';
@@ -304,6 +317,7 @@ var NFJS;
         ViewModelPreparer.prepare = function (viewModel) {
             // backing fields will be stored on the _data property
             viewModel._data = {};
+            viewModel._data._observer = new NFJS.Observer();
             for (var property in viewModel) {
                 if (property === '_data') {
                     continue;
