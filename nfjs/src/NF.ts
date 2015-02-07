@@ -38,6 +38,9 @@ class NF {
         if (NF.Directives['nf-value'] === undefined) {
             NF.Directives['nf-value'] = new NFJS.Directives.Value();
         }
+        if (NF.Directives['nf-template'] === undefined) {
+            NF.Directives['nf-template'] = new NFJS.Directives.Template();
+        }
 
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);

@@ -25,6 +25,9 @@ var NF = (function () {
         if (NF.Directives['nf-value'] === undefined) {
             NF.Directives['nf-value'] = new NFJS.Directives.Value();
         }
+        if (NF.Directives['nf-template'] === undefined) {
+            NF.Directives['nf-template'] = new NFJS.Directives.Template();
+        }
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);
     }
@@ -140,6 +143,57 @@ var NFJS;
             return ForEach;
         })(Directives.DirectiveBase);
         Directives.ForEach = ForEach;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var Template = (function (_super) {
+            __extends(Template, _super);
+            function Template() {
+                _super.apply(this, arguments);
+            }
+            Template.prototype.initialize = function (element, value) {
+                var _this = this;
+                var replaceContainer = value.replaceContainer || false;
+                if (value.id) {
+                    var template = $('#' + value.id).html();
+                    if (!template) {
+                        throw 'Unable to find template with id of "' + value.id + "'";
+                    }
+                    this.applyTemplate(element, template, replaceContainer);
+                }
+                else if (value.url) {
+                    throw 'Not yet implemented!  This binding will need to control its child\'s binding context';
+                    $.ajax({
+                        type: 'GET',
+                        url: value.url,
+                        success: function (template) {
+                            _this.applyTemplate(element, template, replaceContainer);
+                        },
+                        error: function () {
+                            throw 'Unable to get template at url: "' + value.url + '"';
+                        }
+                    });
+                }
+                else {
+                    throw 'The "Template" binding expects an object with either an "id" property or a "url" property';
+                }
+            };
+            Template.prototype.update = function (element, value) {
+            };
+            Template.prototype.applyTemplate = function (containerElement, template, replaceContainer) {
+                var $containerElement = $(containerElement);
+                $containerElement.html(template);
+                if (replaceContainer) {
+                    $containerElement.contents().unwrap();
+                }
+            };
+            return Template;
+        })(Directives.DirectiveBase);
+        Directives.Template = Template;
     })(Directives = NFJS.Directives || (NFJS.Directives = {}));
 })(NFJS || (NFJS = {}));
 /// <reference path="DirectiveBase.ts" />
