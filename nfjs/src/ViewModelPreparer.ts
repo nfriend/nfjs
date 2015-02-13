@@ -7,15 +7,15 @@ module NFJS {
 
         // prepares a ViewModel for databinding by replacing all properties currently on the viewmodel with
         // properties defined with getters and setters
-        static prepare = (viewModel: any): void => {
+        static prepare = (viewModel: ViewModel): void => {
 
             // backing fields will be stored on the _data property
             viewModel._data = {};
 
-            viewModel._data._observer = new NFJS.Observer();
+            viewModel._observer = new Observer(viewModel);
 
             for (var property in viewModel) {
-                if (property === '_data') {
+                if (property === '_data' || property === '_observer' || !(viewModel.hasOwnProperty(property))) {
                     continue;
                 }
 
@@ -24,7 +24,7 @@ module NFJS {
             };
         }
 
-        private static defineProperty(viewModel, property) {
+        private static defineProperty(viewModel: ViewModel, property: string) {
 
             // TODO: handle properties specified in ViewModel's prototype
             if (viewModel.hasOwnProperty(property)) {
@@ -35,17 +35,17 @@ module NFJS {
                 // redefine the property with a getter and setter
                 Object.defineProperty(viewModel, property, {
                     get: function () {
-                        console.log('Got value of property: ' + property);
+                        viewModel._observer.recordPropertyAccess(property);
                         return viewModel._data[property];
                     },
                     set: function (newValue) {
-                        console.log(property + ' set to new value: ' + newValue);
                         viewModel._data[property] = newValue;
+                        viewModel._observer.notifyPropertyChanged(property);
                     }
                 });
 
                 // recursively apply this preparation step to ViewModel sub-properties
-                if (typeof viewModel[property] === 'object') {
+                if (viewModel[property] !== null && typeof viewModel[property] === 'object') {
                     ViewModelPreparer.prepare(viewModel[property]);
                 }
             }

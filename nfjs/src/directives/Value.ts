@@ -5,10 +5,14 @@ module NFJS.Directives {
         initialize(element: HTMLElement, value: any) {
             var $element = $(element);
             $element.val(value);
-            var template = $element.on('keypress', (e) => {
+            var template = $element.on('keypress',(e) => {
+                // not working yet
                 value = $element.val();
             });
         }
-        update(element: HTMLElement, value: any) { }
+        update(element: HTMLElement, value: any) {
+            var $element = $(element);
+            $element.val(value);
+        }
     }
 } 

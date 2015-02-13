@@ -208,9 +208,9 @@ var NFJS;
                 _super.apply(this, arguments);
             }
             Text.prototype.initialize = function (element, value) {
-                element.innerHTML = value;
             };
             Text.prototype.update = function (element, value) {
+                element.innerHTML = value;
             };
             return Text;
         })(Directives.DirectiveBase);
@@ -231,10 +231,13 @@ var NFJS;
                 var $element = $(element);
                 $element.val(value);
                 var template = $element.on('keypress', function (e) {
+                    // not working yet
                     value = $element.val();
                 });
             };
             Value.prototype.update = function (element, value) {
+                var $element = $(element);
+                $element.val(value);
             };
             return Value;
         })(Directives.DirectiveBase);
@@ -245,9 +248,51 @@ var NFJS;
 (function (NFJS) {
     'use strict';
     var Observer = (function () {
-        function Observer() {
+        function Observer(viewModel) {
+            this.dependencies = [];
+            this.isTrackingDependencies = false;
+            this.viewModel = viewModel;
         }
+        Observer.prototype.recordPropertyAccess = function (propertyName) {
+            if (this.isTrackingDependencies) {
+                if (this.currentDependencyList.indexOf(propertyName) === -1) {
+                    this.currentDependencyList.push(propertyName);
+                }
+            }
+        };
+        // TODO: figure out a better way to locate a dependent element/directive based for a given property
         Observer.prototype.notifyPropertyChanged = function (propertyName) {
+            for (var i = 0; i < this.dependencies.length; i++) {
+                for (var directiveName in this.dependencies[i].directives) {
+                    if (this.dependencies[i].directives.hasOwnProperty(directiveName)) {
+                        if (this.dependencies[i].directives[directiveName].indexOf(propertyName) !== -1) {
+                            NFJS.Parser.parseDirectiveForElement(directiveName, this.dependencies[i].element, this.viewModel);
+                        }
+                    }
+                }
+            }
+        };
+        Observer.prototype.beginTrackingDependencies = function (element, directive) {
+            this.isTrackingDependencies = true;
+            var targetDependencyInfo = null;
+            for (var i = 0; i < this.dependencies.length; i++) {
+                if (this.dependencies[i].element == element) {
+                    targetDependencyInfo = this.dependencies[i];
+                    break;
+                }
+            }
+            if (!targetDependencyInfo) {
+                targetDependencyInfo = {
+                    element: element,
+                    directives: {}
+                };
+                this.dependencies.push(targetDependencyInfo);
+            }
+            targetDependencyInfo.directives[directive] = [];
+            this.currentDependencyList = targetDependencyInfo.directives[directive];
+        };
+        Observer.prototype.stopTrackingDependencies = function () {
+            this.isTrackingDependencies = false;
         };
         return Observer;
     })();
@@ -265,13 +310,7 @@ var NFJS;
             for (var directiveName in NF.Directives) {
                 if (NF.Directives.hasOwnProperty(directiveName)) {
                     if (rootElement.hasAttribute(directiveName)) {
-                        var directiveExpression = rootElement.getAttribute(directiveName), computedExpression;
-                        // TypeScript doesn't allow "with"... or does it.  
-                        // TODO: make a proper expression evaluater. This makes me die a little bit inside.
-                        eval("with (viewModel._data) { \
-                                computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
-                            }");
-                        NF.Directives[directiveName].initialize(rootElement, computedExpression);
+                        Parser.parseDirectiveForElement(directiveName, rootElement, viewModel);
                     }
                 }
             }
@@ -279,9 +318,27 @@ var NFJS;
                 _this.parseElementAndChildren(viewModel, elem);
             });
         };
+        Parser.parseDirectiveForElement = function (directiveName, element, viewModel, update) {
+            var directiveExpression = element.getAttribute(directiveName), computedExpression;
+            viewModel._observer.beginTrackingDependencies(element, directiveName);
+            // TypeScript doesn't allow "with"... or does it.  
+            // TODO: make a proper expression evaluater. This makes me die a little bit inside.
+            eval("with (viewModel) { \
+                    computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
+                }");
+            viewModel._observer.stopTrackingDependencies();
+            if (!update) {
+                NF.Directives[directiveName].initialize(element, computedExpression);
+            }
+            NF.Directives[directiveName].update(element, computedExpression);
+        };
         return Parser;
     })();
     NFJS.Parser = Parser;
+})(NFJS || (NFJS = {}));
+var NFJS;
+(function (NFJS) {
+    'use strict';
 })(NFJS || (NFJS = {}));
 /// <reference path="Observer.ts" />
 var NFJS;
@@ -298,16 +355,16 @@ var NFJS;
                 // redefine the property with a getter and setter
                 Object.defineProperty(viewModel, property, {
                     get: function () {
-                        console.log('Got value of property: ' + property);
+                        viewModel._observer.recordPropertyAccess(property);
                         return viewModel._data[property];
                     },
                     set: function (newValue) {
-                        console.log(property + ' set to new value: ' + newValue);
                         viewModel._data[property] = newValue;
+                        viewModel._observer.notifyPropertyChanged(property);
                     }
                 });
                 // recursively apply this preparation step to ViewModel sub-properties
-                if (typeof viewModel[property] === 'object') {
+                if (viewModel[property] !== null && typeof viewModel[property] === 'object') {
                     ViewModelPreparer.prepare(viewModel[property]);
                 }
             }
@@ -317,9 +374,9 @@ var NFJS;
         ViewModelPreparer.prepare = function (viewModel) {
             // backing fields will be stored on the _data property
             viewModel._data = {};
-            viewModel._data._observer = new NFJS.Observer();
+            viewModel._observer = new NFJS.Observer(viewModel);
             for (var property in viewModel) {
-                if (property === '_data') {
+                if (property === '_data' || property === '_observer' || !(viewModel.hasOwnProperty(property))) {
                     continue;
                 }
                 // calling into another function here to avoid the classic for/closure problem

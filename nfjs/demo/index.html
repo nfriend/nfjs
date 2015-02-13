@@ -18,7 +18,12 @@
     First name: <input nf-value="firstName" />
     Last name: <input nf-value="lastName" />
     <p nf-text="'Hello, ' + firstName + ' ' + lastName"></p>
-    <button nf-click="changeName">Change Name</button>
+    <button nf-click="changeName">Change name</button>
+
+    <br />
+    <br />
+
+    Current date and time: <span nf-text="currentDate"></span>
 
     <br />
     <br />
@@ -31,6 +36,7 @@
 
     <script type="text/javascript" src="lib/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="../src/nfjs-0.0.1.js"></script>
+    <script type="text/javascript" src="lib/moment.js"></script>
     <script type="text/javascript" src="demo.js"></script>
 </body>
 </html>

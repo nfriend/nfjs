@@ -4,23 +4,11 @@
 
     export class Parser {
 
-        public static parseElementAndChildren(viewModel: any, rootElement: Element) {
+        public static parseElementAndChildren(viewModel: ViewModel, rootElement: Element) {
             for (var directiveName in NF.Directives) {
                 if (NF.Directives.hasOwnProperty(directiveName)) {
                     if (rootElement.hasAttribute(directiveName)) {
-
-                        var directiveExpression = rootElement.getAttribute(directiveName),
-                            computedExpression;
-                        
-                        // TypeScript doesn't allow "with"... or does it.  
-                        // TODO: make a proper expression evaluater. This makes me die a little bit inside.
-                        eval(
-                            "with (viewModel._data) { \
-                                computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
-                            }"
-                            );
-
-                        NF.Directives[directiveName].initialize(rootElement, computedExpression);
+                        Parser.parseDirectiveForElement(directiveName, rootElement, viewModel);
                     }
                 }
             }
@@ -28,6 +16,28 @@
             $(rootElement).children().each((i, elem) => {
                 this.parseElementAndChildren(viewModel, elem);
             });
+        }
+
+        public static parseDirectiveForElement(directiveName: string, element: Element, viewModel: ViewModel, update?: boolean) {
+            var directiveExpression = element.getAttribute(directiveName),
+                computedExpression;
+
+            viewModel._observer.beginTrackingDependencies(element, directiveName);
+                        
+            // TypeScript doesn't allow "with"... or does it.  
+            // TODO: make a proper expression evaluater. This makes me die a little bit inside.
+            eval(
+                "with (viewModel) { \
+                    computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
+                }"
+                );
+
+            viewModel._observer.stopTrackingDependencies();
+
+            if (!update) {
+                NF.Directives[directiveName].initialize(element, computedExpression);
+            }
+            NF.Directives[directiveName].update(element, computedExpression);
         }
     }
 } 

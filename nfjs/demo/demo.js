@@ -13,9 +13,11 @@
     _this.firstName = 'Nathan';
     _this.lastName = 'Friend';
     _this.changeName = function () {
-        _this.firstName = 'John';
+        _this.firstName = 'John '
         _this.lastName = 'Doe';
     }
+
+    _this.currentDate = null;
 
     _this.complexObject = {
         aKey: {
@@ -24,6 +26,14 @@
             }
         }
     }
+
+    setInterval(calculateAndSetDate, 500);
+
+    function calculateAndSetDate() {
+        _this.currentDate = moment(Date.now()).format('MMMM Do YYYY, h:mm:ss a');
+    }
+
+    calculateAndSetDate();
 }
 
 var nf = new NF(new DemoViewModel());
