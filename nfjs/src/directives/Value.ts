@@ -6,8 +6,7 @@ module NFJS.Directives {
             var $element = $(element);
             $element.val(value);
             var template = $element.on('keypress',(e) => {
-                // not working yet
-                value = $element.val();
+                this.setValue($element.val());
             });
         }
         update(element: HTMLElement, value: any) {

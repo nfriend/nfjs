@@ -9,7 +9,7 @@ interface DirectiveReference {
 class NF {
 
     private baseViewModel;
-    public static Directives: Array<NFJS.Directives.DirectiveBase> = [];
+    public static Directives: { [directiveName: string]: NFJS.Directives.DirectiveBase } = {}
 
     constructor(viewModel: any) {
 

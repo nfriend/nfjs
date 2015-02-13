@@ -35,9 +35,9 @@
             viewModel._observer.stopTrackingDependencies();
 
             if (!update) {
-                NF.Directives[directiveName].initialize(element, computedExpression);
+                NF.Directives[directiveName]._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
             }
-            NF.Directives[directiveName].update(element, computedExpression);
+            NF.Directives[directiveName]._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
         }
     }
 } 

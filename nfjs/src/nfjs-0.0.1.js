@@ -43,7 +43,7 @@ var NF = (function () {
         }
         NFJS.Parser.parseElementAndChildren(this.baseViewModel, rootElement);
     };
-    NF.Directives = [];
+    NF.Directives = {};
     return NF;
 })();
 /// <reference path="src/NF.ts" /> 
@@ -54,10 +54,28 @@ var NFJS;
         var DirectiveBase = (function () {
             function DirectiveBase() {
                 this.controlsDescendantBindings = false;
+                this.setValue = function (newValue) {
+                };
             }
-            DirectiveBase.prototype.initialize = function (element, value) {
+            DirectiveBase.prototype.initialize = function (element, value, viewModel) {
             };
-            DirectiveBase.prototype.update = function (element, value) {
+            DirectiveBase.prototype.update = function (element, value, viewModel) {
+            };
+            DirectiveBase.prototype._triggerInitialize = function (element, value, viewModel, directiveExpression) {
+                this._updateSetValueFunction(viewModel, directiveExpression);
+                this.initialize(element, value, viewModel);
+            };
+            DirectiveBase.prototype._triggerUpdate = function (element, value, viewModel, directiveExpression) {
+                this._updateSetValueFunction(viewModel, directiveExpression);
+                this.update(element, value, viewModel);
+            };
+            DirectiveBase.prototype._updateSetValueFunction = function (viewModel, directiveExpression) {
+                this.setValue = function (newValue) {
+                    if (!viewModel[directiveExpression]) {
+                        throw 'The expression "' + directiveExpression + '" is not a property and therefore cannot be set';
+                    }
+                    viewModel[directiveExpression] = newValue;
+                };
             };
             return DirectiveBase;
         })();
@@ -228,11 +246,11 @@ var NFJS;
                 _super.apply(this, arguments);
             }
             Value.prototype.initialize = function (element, value) {
+                var _this = this;
                 var $element = $(element);
                 $element.val(value);
                 var template = $element.on('keypress', function (e) {
-                    // not working yet
-                    value = $element.val();
+                    _this.setValue($element.val());
                 });
             };
             Value.prototype.update = function (element, value) {
@@ -328,9 +346,9 @@ var NFJS;
                 }");
             viewModel._observer.stopTrackingDependencies();
             if (!update) {
-                NF.Directives[directiveName].initialize(element, computedExpression);
+                NF.Directives[directiveName]._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
             }
-            NF.Directives[directiveName].update(element, computedExpression);
+            NF.Directives[directiveName]._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
         };
         return Parser;
     })();
