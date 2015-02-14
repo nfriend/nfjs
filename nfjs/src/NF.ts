@@ -10,6 +10,9 @@ class NF {
 
     private static baseViewModel;
 
+    // how to respond when bindings fail.  possible values: 'throw', 'log', 'none'
+    public static bindingFailureBehavior = 'throw';
+
     public static run(viewModel: any, rootElementId?: string): void {
         // TODO: handle no-conflict jQuery
         if (typeof $ === 'undefined') {

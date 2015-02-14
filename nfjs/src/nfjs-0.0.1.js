@@ -53,6 +53,8 @@ var NF = (function () {
         }
         NFJS.Directives.allDirectives.push(directive);
     };
+    // how to respond when bindings fail.  possible values: 'throw', 'log', 'none'
+    NF.bindingFailureBehavior = 'throw';
     return NF;
 })();
 /// <reference path="src/NF.ts" /> 
@@ -442,11 +444,22 @@ var NFJS;
             if (viewModel._observer) {
                 viewModel._observer.beginTrackingDependencies(element, directive);
             }
-            // TypeScript doesn't allow "with"... or does it.  
-            // TODO: make a proper expression evaluater. This makes me die a little bit inside.
-            eval("with (viewModel) { \
-                    computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
-                }");
+            try {
+                eval("with (viewModel) { \
+                        computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
+                    }");
+            }
+            catch (e) {
+                var message = 'Unable to process binding "' + directive.constructor.name + '".The following expression could not be evaluated: ' + directiveExpression;
+                if (NF.bindingFailureBehavior.toLowerCase() === 'throw') {
+                    throw message;
+                }
+                else if (NF.bindingFailureBehavior.toLowerCase() === 'log') {
+                    console.error(message, e);
+                }
+                else {
+                }
+            }
             viewModel['$data'] = undefined;
             if (viewModel._observer) {
                 viewModel._observer.stopTrackingDependencies();

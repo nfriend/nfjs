@@ -53,11 +53,22 @@
                         
             // TypeScript doesn't allow "with"... or does it.  
             // TODO: make a proper expression evaluater. This makes me die a little bit inside.
-            eval(
-                "with (viewModel) { \
-                    computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
-                }"
-                );
+            try {
+                eval(
+                    "with (viewModel) { \
+                        computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
+                    }"
+                    );
+            } catch (e) {
+                var message = 'Unable to process binding "' + (<any>directive.constructor).name + '".The following expression could not be evaluated: ' + directiveExpression;
+                if (NF.bindingFailureBehavior.toLowerCase() === 'throw') {
+                    throw message;
+                } else if (NF.bindingFailureBehavior.toLowerCase() === 'log') {
+                    console.error(message, e);
+                } else {
+                    // do nothing; let the binding fail silently
+                }
+            }
 
             viewModel['$data'] = undefined;
 
