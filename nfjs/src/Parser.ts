@@ -5,11 +5,21 @@
     export class Parser {
 
         public static parseElementAndChildren(viewModel: ViewModel, rootElement: Element) {
-            for (var directiveName in NF.Directives) {
-                if (NF.Directives.hasOwnProperty(directiveName)) {
-                    if (rootElement.hasAttribute(directiveName)) {
-                        Parser.parseDirectiveForElement(directiveName, rootElement, viewModel);
+            for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
+                var currentDirective = NFJS.Directives.allDirectives[i];
+                if (rootElement.hasAttribute(currentDirective.name)) {
+
+                    var $rootElement = $(rootElement),
+                        initialize = false,
+                        directiveInstance = <NFJS.Directives.DirectiveBase>($rootElement.data(currentDirective.name));
+
+                    if (!directiveInstance) {
+                        directiveInstance = new currentDirective();
+                        $rootElement.data(currentDirective.name, directiveInstance);
+                        initialize = true;
                     }
+
+                    Parser.parseDirectiveForElement(directiveInstance, rootElement, viewModel, initialize);
                 }
             }
 
@@ -18,11 +28,13 @@
             });
         }
 
-        public static parseDirectiveForElement(directiveName: string, element: Element, viewModel: ViewModel, update?: boolean) {
-            var directiveExpression = element.getAttribute(directiveName),
-                computedExpression;
+        public static parseDirectiveForElement(directive: NFJS.Directives.DirectiveBase, element: Element, viewModel: ViewModel, initialize?: boolean) {
+            var directiveExpression = element.getAttribute((<any>directive.constructor).name),
+                $element = $(element),
+                computedExpression,
+                directive: NFJS.Directives.DirectiveBase;
 
-            viewModel._observer.beginTrackingDependencies(element, directiveName);
+            viewModel._observer.beginTrackingDependencies(element, directive);
                         
             // TypeScript doesn't allow "with"... or does it.  
             // TODO: make a proper expression evaluater. This makes me die a little bit inside.
@@ -34,10 +46,10 @@
 
             viewModel._observer.stopTrackingDependencies();
 
-            if (!update) {
-                NF.Directives[directiveName]._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
+            if (initialize) {
+                directive._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
             }
-            NF.Directives[directiveName]._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
+            directive._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
         }
     }
 } 

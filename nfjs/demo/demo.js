@@ -36,5 +36,4 @@
     calculateAndSetDate();
 }
 
-var nf = new NF(new DemoViewModel());
-nf.run();
+NF.run(new DemoViewModel());

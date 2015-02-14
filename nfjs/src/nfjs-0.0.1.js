@@ -1,6 +1,8 @@
 /// <reference path="../Scripts/typings/jquery/jquery.d.ts" />
 var NF = (function () {
-    function NF(viewModel) {
+    function NF() {
+    }
+    NF.run = function (viewModel, rootElementId) {
         // TODO: handle no-conflict jQuery
         if (typeof $ === 'undefined') {
             throw 'jQuery not loaded! NF.js requires jQuery >= 2.0.0.';
@@ -10,28 +12,27 @@ var NF = (function () {
         }
         this.baseViewModel = viewModel;
         // add default bindings, if they haven't already been defined
-        if (NF.Directives['nf-foreach'] === undefined) {
-            NF.Directives['nf-foreach'] = new NFJS.Directives.ForEach();
-        }
-        if (NF.Directives['nf-text'] === undefined) {
-            NF.Directives['nf-text'] = new NFJS.Directives.Text();
-        }
-        if (NF.Directives['nf-click'] === undefined) {
-            NF.Directives['nf-click'] = new NFJS.Directives.Click();
-        }
-        if (NF.Directives['nf-event'] === undefined) {
-            NF.Directives['nf-event'] = new NFJS.Directives.Event();
-        }
-        if (NF.Directives['nf-value'] === undefined) {
-            NF.Directives['nf-value'] = new NFJS.Directives.Value();
-        }
-        if (NF.Directives['nf-template'] === undefined) {
-            NF.Directives['nf-template'] = new NFJS.Directives.Template();
+        var defaultBindings = [
+            NFJS.Directives.ForEach,
+            NFJS.Directives.Text,
+            NFJS.Directives.Click,
+            NFJS.Directives.Event,
+            NFJS.Directives.Value,
+            NFJS.Directives.Template
+        ];
+        for (var i = 0; i < defaultBindings.length; i++) {
+            var bindingAlreadyExists = false;
+            for (var j = 0; j < NFJS.Directives.allDirectives.length; j++) {
+                if (NFJS.Directives.allDirectives[j].name === defaultBindings[i].name) {
+                    bindingAlreadyExists = true;
+                }
+            }
+            if (!bindingAlreadyExists) {
+                NF.addOrReplaceDirective(defaultBindings[i]);
+            }
         }
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);
-    }
-    NF.prototype.run = function (rootElementId) {
         if (rootElementId) {
             var rootElement = $('#' + rootElementId)[0];
             if (!rootElement) {
@@ -43,10 +44,24 @@ var NF = (function () {
         }
         NFJS.Parser.parseElementAndChildren(this.baseViewModel, rootElement);
     };
-    NF.Directives = {};
+    NF.addOrReplaceDirective = function (directive) {
+        for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
+            if (NFJS.Directives.allDirectives[i].name === directive.name) {
+                delete NFJS.Directives.allDirectives[i];
+            }
+        }
+        NFJS.Directives.allDirectives.push(directive);
+    };
     return NF;
 })();
 /// <reference path="src/NF.ts" /> 
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        Directives.allDirectives = [];
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
 var NFJS;
 (function (NFJS) {
     var Directives;
@@ -71,7 +86,7 @@ var NFJS;
             };
             DirectiveBase.prototype._updateSetValueFunction = function (viewModel, directiveExpression) {
                 this.setValue = function (newValue) {
-                    if (!viewModel[directiveExpression]) {
+                    if (typeof viewModel[directiveExpression] === 'undefined') {
                         throw 'The expression "' + directiveExpression + '" is not a property and therefore cannot be set';
                     }
                     viewModel[directiveExpression] = newValue;
@@ -106,6 +121,7 @@ var NFJS;
             };
             Click.prototype.update = function (element, value) {
             };
+            Click.name = 'nf-click';
             return Click;
         })(Directives.DirectiveBase);
         Directives.Click = Click;
@@ -132,6 +148,7 @@ var NFJS;
             };
             Event.prototype.update = function (element, value) {
             };
+            Event.name = 'nf-event';
             return Event;
         })(Directives.DirectiveBase);
         Directives.Event = Event;
@@ -158,6 +175,7 @@ var NFJS;
             };
             ForEach.prototype.update = function (element, value) {
             };
+            ForEach.name = 'nf-foreach';
             return ForEach;
         })(Directives.DirectiveBase);
         Directives.ForEach = ForEach;
@@ -210,6 +228,7 @@ var NFJS;
                     $containerElement.contents().unwrap();
                 }
             };
+            Template.name = 'nf-template';
             return Template;
         })(Directives.DirectiveBase);
         Directives.Template = Template;
@@ -230,6 +249,7 @@ var NFJS;
             Text.prototype.update = function (element, value) {
                 element.innerHTML = value;
             };
+            Text.name = 'nf-text';
             return Text;
         })(Directives.DirectiveBase);
         Directives.Text = Text;
@@ -249,7 +269,7 @@ var NFJS;
                 var _this = this;
                 var $element = $(element);
                 $element.val(value);
-                var template = $element.on('keypress', function (e) {
+                var template = $element.on('input', function (e) {
                     _this.setValue($element.val());
                 });
             };
@@ -257,6 +277,7 @@ var NFJS;
                 var $element = $(element);
                 $element.val(value);
             };
+            Value.name = 'nf-value';
             return Value;
         })(Directives.DirectiveBase);
         Directives.Value = Value;
@@ -267,47 +288,39 @@ var NFJS;
     'use strict';
     var Observer = (function () {
         function Observer(viewModel) {
-            this.dependencies = [];
+            this.dependencies = {};
             this.isTrackingDependencies = false;
             this.viewModel = viewModel;
         }
         Observer.prototype.recordPropertyAccess = function (propertyName) {
             if (this.isTrackingDependencies) {
-                if (this.currentDependencyList.indexOf(propertyName) === -1) {
-                    this.currentDependencyList.push(propertyName);
+                this.dependencies[propertyName] = this.dependencies[propertyName] || [];
+                var dependencyIsAlreadyRecorded = false;
+                for (var i = 0; i < this.dependencies[propertyName].length; i++) {
+                    var currentDependency = this.dependencies[propertyName][i];
+                    if (currentDependency.directive.constructor.name === this.currentElementAndDirective.directive.constructor.name && currentDependency.element === this.currentElementAndDirective.element) {
+                        dependencyIsAlreadyRecorded = true;
+                        break;
+                    }
+                }
+                if (!dependencyIsAlreadyRecorded) {
+                    this.dependencies[propertyName].push(this.currentElementAndDirective);
                 }
             }
         };
-        // TODO: figure out a better way to locate a dependent element/directive based for a given property
         Observer.prototype.notifyPropertyChanged = function (propertyName) {
-            for (var i = 0; i < this.dependencies.length; i++) {
-                for (var directiveName in this.dependencies[i].directives) {
-                    if (this.dependencies[i].directives.hasOwnProperty(directiveName)) {
-                        if (this.dependencies[i].directives[directiveName].indexOf(propertyName) !== -1) {
-                            NFJS.Parser.parseDirectiveForElement(directiveName, this.dependencies[i].element, this.viewModel);
-                        }
-                    }
-                }
+            if (!this.dependencies[propertyName])
+                return;
+            for (var i = 0; i < this.dependencies[propertyName].length; i++) {
+                NFJS.Parser.parseDirectiveForElement(this.dependencies[propertyName][i].directive, this.dependencies[propertyName][i].element, this.viewModel);
             }
         };
         Observer.prototype.beginTrackingDependencies = function (element, directive) {
             this.isTrackingDependencies = true;
-            var targetDependencyInfo = null;
-            for (var i = 0; i < this.dependencies.length; i++) {
-                if (this.dependencies[i].element == element) {
-                    targetDependencyInfo = this.dependencies[i];
-                    break;
-                }
-            }
-            if (!targetDependencyInfo) {
-                targetDependencyInfo = {
-                    element: element,
-                    directives: {}
-                };
-                this.dependencies.push(targetDependencyInfo);
-            }
-            targetDependencyInfo.directives[directive] = [];
-            this.currentDependencyList = targetDependencyInfo.directives[directive];
+            this.currentElementAndDirective = {
+                directive: directive,
+                element: element
+            };
         };
         Observer.prototype.stopTrackingDependencies = function () {
             this.isTrackingDependencies = false;
@@ -325,30 +338,35 @@ var NFJS;
         }
         Parser.parseElementAndChildren = function (viewModel, rootElement) {
             var _this = this;
-            for (var directiveName in NF.Directives) {
-                if (NF.Directives.hasOwnProperty(directiveName)) {
-                    if (rootElement.hasAttribute(directiveName)) {
-                        Parser.parseDirectiveForElement(directiveName, rootElement, viewModel);
+            for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
+                var currentDirective = NFJS.Directives.allDirectives[i];
+                if (rootElement.hasAttribute(currentDirective.name)) {
+                    var $rootElement = $(rootElement), initialize = false, directiveInstance = ($rootElement.data(currentDirective.name));
+                    if (!directiveInstance) {
+                        directiveInstance = new currentDirective();
+                        $rootElement.data(currentDirective.name, directiveInstance);
+                        initialize = true;
                     }
+                    Parser.parseDirectiveForElement(directiveInstance, rootElement, viewModel, initialize);
                 }
             }
             $(rootElement).children().each(function (i, elem) {
                 _this.parseElementAndChildren(viewModel, elem);
             });
         };
-        Parser.parseDirectiveForElement = function (directiveName, element, viewModel, update) {
-            var directiveExpression = element.getAttribute(directiveName), computedExpression;
-            viewModel._observer.beginTrackingDependencies(element, directiveName);
+        Parser.parseDirectiveForElement = function (directive, element, viewModel, initialize) {
+            var directiveExpression = element.getAttribute(directive.constructor.name), $element = $(element), computedExpression, directive;
+            viewModel._observer.beginTrackingDependencies(element, directive);
             // TypeScript doesn't allow "with"... or does it.  
             // TODO: make a proper expression evaluater. This makes me die a little bit inside.
             eval("with (viewModel) { \
                     computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
                 }");
             viewModel._observer.stopTrackingDependencies();
-            if (!update) {
-                NF.Directives[directiveName]._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
+            if (initialize) {
+                directive._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
             }
-            NF.Directives[directiveName]._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
+            directive._triggerUpdate(element, computedExpression, viewModel, directiveExpression);
         };
         return Parser;
     })();

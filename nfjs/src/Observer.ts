@@ -2,8 +2,10 @@
     'use strict';
 
     interface DependencyInfo {
-        element: Element;
-        directives: { [directiveName: string]: Array<string> };
+        [propertyName: string]: Array<{
+            directive: NFJS.Directives.DirectiveBase;
+            element: Element
+        }>;
     }
 
     export class Observer {
@@ -12,54 +14,48 @@
             this.viewModel = viewModel;
         }
 
-        private dependencies: Array<DependencyInfo> = [];
-        private currentDependencyList: Array<string>;
+        private dependencies: DependencyInfo = {};
+        private currentElementAndDirective: {
+            directive: NFJS.Directives.DirectiveBase;
+            element: Element
+        };
         private isTrackingDependencies: boolean = false;
         private viewModel: ViewModel;
 
         public recordPropertyAccess(propertyName: string): void {
             if (this.isTrackingDependencies) {
-                if (this.currentDependencyList.indexOf(propertyName) === -1) {
-                    this.currentDependencyList.push(propertyName);
-                }
-            }
-        }
+                this.dependencies[propertyName] = this.dependencies[propertyName] || [];
+                var dependencyIsAlreadyRecorded = false;
+                for (var i = 0; i < this.dependencies[propertyName].length; i++) {
+                    var currentDependency = this.dependencies[propertyName][i];
+                    if ((<any>currentDependency.directive.constructor).name === (<any>this.currentElementAndDirective.directive.constructor).name
+                        && currentDependency.element === this.currentElementAndDirective.element) {
 
-        // TODO: figure out a better way to locate a dependent element/directive based for a given property
-        public notifyPropertyChanged(propertyName: string): void {
-            for (var i = 0; i < this.dependencies.length; i++) {
-                for (var directiveName in this.dependencies[i].directives) {
-                    if (this.dependencies[i].directives.hasOwnProperty(<string>directiveName)) {
-                        if (this.dependencies[i].directives[directiveName].indexOf(propertyName) !== -1) {
-                            Parser.parseDirectiveForElement(directiveName, this.dependencies[i].element, this.viewModel);
-                        }
+                        dependencyIsAlreadyRecorded = true;
+                        break;
                     }
                 }
+                if (!dependencyIsAlreadyRecorded) {
+                    this.dependencies[propertyName].push(this.currentElementAndDirective);
+                }
             }
         }
 
-        public beginTrackingDependencies(element: Element, directive: string): void {
+        public notifyPropertyChanged(propertyName: string): void {
+            if (!this.dependencies[propertyName])
+                return;
+
+            for (var i = 0; i < this.dependencies[propertyName].length; i++) {
+                Parser.parseDirectiveForElement(this.dependencies[propertyName][i].directive, this.dependencies[propertyName][i].element, this.viewModel);
+            }
+        }
+
+        public beginTrackingDependencies(element: Element, directive: NFJS.Directives.DirectiveBase): void {
             this.isTrackingDependencies = true;
-
-            var targetDependencyInfo: DependencyInfo = null;
-            for (var i = 0; i < this.dependencies.length; i++) {
-                if (this.dependencies[i].element == element) {
-                    targetDependencyInfo = this.dependencies[i]
-                    break;
-                }
-            }
-
-            if (!targetDependencyInfo) {
-                targetDependencyInfo = {
-                    element: element,
-                    directives: {}
-                }
-                this.dependencies.push(targetDependencyInfo);
-            }
-
-            targetDependencyInfo.directives[directive] = [];
-
-            this.currentDependencyList = targetDependencyInfo.directives[directive];
+            this.currentElementAndDirective = {
+                directive: directive,
+                element: element
+            };
         }
 
         public stopTrackingDependencies(): void {

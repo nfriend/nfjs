@@ -8,11 +8,9 @@ interface DirectiveReference {
 
 class NF {
 
-    private baseViewModel;
-    public static Directives: { [directiveName: string]: NFJS.Directives.DirectiveBase } = {}
+    private static baseViewModel;
 
-    constructor(viewModel: any) {
-
+    public static run(viewModel: any, rootElementId?: string): void {
         // TODO: handle no-conflict jQuery
         if (typeof $ === 'undefined') {
             throw 'jQuery not loaded! NF.js requires jQuery >= 2.0.0.'
@@ -23,30 +21,30 @@ class NF {
         this.baseViewModel = viewModel;
 
         // add default bindings, if they haven't already been defined
-        if (NF.Directives['nf-foreach'] === undefined) {
-            NF.Directives['nf-foreach'] = new NFJS.Directives.ForEach();
-        }
-        if (NF.Directives['nf-text'] === undefined) {
-            NF.Directives['nf-text'] = new NFJS.Directives.Text();
-        }
-        if (NF.Directives['nf-click'] === undefined) {
-            NF.Directives['nf-click'] = new NFJS.Directives.Click();
-        }
-        if (NF.Directives['nf-event'] === undefined) {
-            NF.Directives['nf-event'] = new NFJS.Directives.Event();
-        }
-        if (NF.Directives['nf-value'] === undefined) {
-            NF.Directives['nf-value'] = new NFJS.Directives.Value();
-        }
-        if (NF.Directives['nf-template'] === undefined) {
-            NF.Directives['nf-template'] = new NFJS.Directives.Template();
+        var defaultBindings: typeof NFJS.Directives.DirectiveBase[] = [
+            NFJS.Directives.ForEach,
+            NFJS.Directives.Text,
+            NFJS.Directives.Click,
+            NFJS.Directives.Event,
+            NFJS.Directives.Value,
+            NFJS.Directives.Template
+        ]
+        for (var i = 0; i < defaultBindings.length; i++) {
+            var bindingAlreadyExists = false;
+            for (var j = 0; j < NFJS.Directives.allDirectives.length; j++) {
+                if (NFJS.Directives.allDirectives[j].name === defaultBindings[i].name) {
+                    bindingAlreadyExists = true;
+                }
+            }
+
+            if (!bindingAlreadyExists) {
+                NF.addOrReplaceDirective(defaultBindings[i]);
+            }
         }
 
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);
-    }
 
-    public run(rootElementId?: string): void {
         if (rootElementId) {
             var rootElement = $('#' + rootElementId)[0];
             if (!rootElement) {
@@ -57,5 +55,15 @@ class NF {
         }
 
         NFJS.Parser.parseElementAndChildren(this.baseViewModel, rootElement);
+    }
+
+    public static addOrReplaceDirective(directive: typeof NFJS.Directives.DirectiveBase) {
+        for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
+            if (NFJS.Directives.allDirectives[i].name === directive.name) {
+                delete NFJS.Directives.allDirectives[i];
+            }
+        }
+
+        NFJS.Directives.allDirectives.push(directive);
     }
 }

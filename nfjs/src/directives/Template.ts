@@ -2,6 +2,8 @@
 
 module NFJS.Directives {
     export class Template extends DirectiveBase {
+        public static name = 'nf-template';
+
         initialize(element: HTMLElement, value: any) {
 
             var replaceContainer = value.replaceContainer || false;

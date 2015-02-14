@@ -2,6 +2,8 @@
 
 module NFJS.Directives {
     export class ForEach extends DirectiveBase {
+        public static name = 'nf-foreach';
+
         initialize(element: HTMLElement, value: any) {
             var $element = $(element);
             var template = $element.html();
