@@ -13,10 +13,10 @@
         <p nf-text="'Message #' + ($index + 1) + ': ' + $data"></p>
         <p nf-text="'previous message: ' + $prev"></p>
         <p nf-text="'next message: ' + $next"></p>
-        <p nf-text="'parent length: ' + $parent.length"></p>
+        <p nf-text="'parent length: ' + $parent.messages.length"></p>
         <p nf-text="'isFirst: ' + $isFirst"></p>
         <p nf-text="'isLast: ' + $isLast"></p>
-        <!--<button nf-click="{ handler: $parent.deleteMessage, params: [$data] }">Delete this message</button>-->
+        <button nf-click="{ handler: $parent.deleteMessage, params: [$data] }">Delete this message</button>
         <hr />
     </div>
 

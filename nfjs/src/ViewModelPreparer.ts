@@ -28,9 +28,8 @@ module NFJS {
 
             // TODO: handle properties specified in ViewModel's prototype
             if (viewModel.hasOwnProperty(property)) {
-
-                // set the initial value
-                viewModel._data[property] = viewModel[property];
+                
+                var initialValue = viewModel[property];
 
                 // redefine the property with a getter and setter
                 Object.defineProperty(viewModel, property, {
@@ -40,15 +39,44 @@ module NFJS {
                     },
                     set: function (newValue) {
                         viewModel._data[property] = newValue;
+
+                        if (newValue.constructor === Array) {
+                            ViewModelPreparer.augmentArrayMethods(newValue, viewModel, property);
+                        }
+
                         viewModel._observer.notifyPropertyChanged(property);
                     }
                 });
+
+                // initialize the property with the same value that was passed in
+                viewModel[property] = initialValue;
 
                 // recursively apply this preparation step to ViewModel sub-properties
                 if (viewModel[property] !== null && typeof viewModel[property] === 'object') {
                     ViewModelPreparer.prepare(viewModel[property]);
                 }
+
             }
+        }
+
+        private static augmentArrayMethods(array: Array<any>, viewModel: ViewModel, property: string) {
+            var methods = [
+                'push',
+                'pop',
+                'shift',
+                'unshift',
+                'splice',
+                'sort',
+                'reverse'
+            ];
+            
+            methods.forEach((method) => {
+                array[method] = function () {
+                    var returnValue = Array.prototype[method].apply(this, arguments);
+                    viewModel._observer.notifyPropertyChanged(property);
+                    return returnValue;
+                }
+            });                
         }
     }
 } 

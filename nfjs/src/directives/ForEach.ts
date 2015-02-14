@@ -3,14 +3,19 @@
 module NFJS.Directives {
     export class ForEach extends DirectiveBase {
         public static name = 'nf-foreach';
+        private template: string;
 
         initialize(element: HTMLElement, value: any, viewModel: ViewModel) {
             var $element = $(element);
-            var template = $element.html();
+            this.template = $element.html();
+            $element.html('');
+        }
+        update(element: HTMLElement, value: any, viewModel: ViewModel) {
+            var $element = $(element);
             $element.html('');
 
             for (var i = 0; i < value.length; i++) {
-                var templatedElements = $(template);
+                var templatedElements = $(this.template);
                 $element.append(templatedElements);
                 templatedElements.each((index, innerElement) => {
                     if (typeof value[i] === 'object') {
@@ -41,7 +46,6 @@ module NFJS.Directives {
                 });
             }
         }
-        update(element: HTMLElement, value: any) { }
         controlsDescendantBindings = true;
     }
 } 

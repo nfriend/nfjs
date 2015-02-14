@@ -81,6 +81,7 @@
   <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="src\arrayModifications.ts" />
     <TypeScriptCompile Include="src\directives\allBindings.ts" />
     <TypeScriptCompile Include="src\directives\If.ts" />
     <TypeScriptCompile Include="src\directives\Template.ts" />

@@ -7,7 +7,7 @@
     _this.deleteMessage = function (messageToDelete) {
         var indexToDelete = _this.messages.indexOf(messageToDelete);
         if (indexToDelete !== -1) {
-            _this.message.splice(indexToDelete, 1);
+            _this.messages.splice(indexToDelete, 1);
         }
     };
 

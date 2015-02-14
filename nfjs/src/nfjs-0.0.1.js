@@ -57,6 +57,7 @@ var NF = (function () {
     NF.bindingFailureBehavior = 'throw';
     return NF;
 })();
+/// <reference path="src/arrayModifications.ts" />
 /// <reference path="src/NF.ts" /> 
 var NFJS;
 (function (NFJS) {
@@ -184,10 +185,14 @@ var NFJS;
             }
             ForEach.prototype.initialize = function (element, value, viewModel) {
                 var $element = $(element);
-                var template = $element.html();
+                this.template = $element.html();
+                $element.html('');
+            };
+            ForEach.prototype.update = function (element, value, viewModel) {
+                var $element = $(element);
                 $element.html('');
                 for (var i = 0; i < value.length; i++) {
-                    var templatedElements = $(template);
+                    var templatedElements = $(this.template);
                     $element.append(templatedElements);
                     templatedElements.each(function (index, innerElement) {
                         if (typeof value[i] === 'object') {
@@ -215,8 +220,6 @@ var NFJS;
                         bindingContext['$parent'] = undefined;
                     });
                 }
-            };
-            ForEach.prototype.update = function (element, value) {
             };
             ForEach.name = 'nf-foreach';
             return ForEach;
@@ -487,8 +490,7 @@ var NFJS;
         ViewModelPreparer.defineProperty = function (viewModel, property) {
             // TODO: handle properties specified in ViewModel's prototype
             if (viewModel.hasOwnProperty(property)) {
-                // set the initial value
-                viewModel._data[property] = viewModel[property];
+                var initialValue = viewModel[property];
                 // redefine the property with a getter and setter
                 Object.defineProperty(viewModel, property, {
                     get: function () {
@@ -497,14 +499,37 @@ var NFJS;
                     },
                     set: function (newValue) {
                         viewModel._data[property] = newValue;
+                        if (newValue.constructor === Array) {
+                            ViewModelPreparer.augmentArrayMethods(newValue, viewModel, property);
+                        }
                         viewModel._observer.notifyPropertyChanged(property);
                     }
                 });
+                // initialize the property with the same value that was passed in
+                viewModel[property] = initialValue;
                 // recursively apply this preparation step to ViewModel sub-properties
                 if (viewModel[property] !== null && typeof viewModel[property] === 'object') {
                     ViewModelPreparer.prepare(viewModel[property]);
                 }
             }
+        };
+        ViewModelPreparer.augmentArrayMethods = function (array, viewModel, property) {
+            var methods = [
+                'push',
+                'pop',
+                'shift',
+                'unshift',
+                'splice',
+                'sort',
+                'reverse'
+            ];
+            methods.forEach(function (method) {
+                array[method] = function () {
+                    var returnValue = Array.prototype[method].apply(this, arguments);
+                    viewModel._observer.notifyPropertyChanged(property);
+                    return returnValue;
+                };
+            });
         };
         // prepares a ViewModel for databinding by replacing all properties currently on the viewmodel with
         // properties defined with getters and setters
