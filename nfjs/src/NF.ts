@@ -31,7 +31,9 @@ class NF {
             NFJS.Directives.Event,
             NFJS.Directives.Value,
             NFJS.Directives.Template,
-            NFJS.Directives.If
+            NFJS.Directives.If,
+            NFJS.Directives.Class,
+            NFJS.Directives.Style,
         ]
         for (var i = 0; i < defaultBindings.length; i++) {
             var bindingAlreadyExists = false;

@@ -10,6 +10,7 @@ module NFJS.Directives {
             this.template = $element.html();
             $element.html('');
         }
+        // TODO: don't regenerate everything always - only regenerate the items that changed
         update(element: HTMLElement, value: any, viewModel: ViewModel) {
             var $element = $(element);
             $element.html('');

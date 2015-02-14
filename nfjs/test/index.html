@@ -2,9 +2,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>nfjs demo</title>
+    <link type="text/css" rel="stylesheet" href="test.css" />
 </head>
 <body>
-    <div nf-foreach="messages">
+    <!--<div nf-foreach="messages">
         <div nf-if="$isFirst">
             <hr />
         </div>
@@ -18,7 +19,7 @@
         <p nf-text="'isLast: ' + $isLast"></p>
         <button nf-click="{ handler: $parent.deleteMessage, params: [$data] }">Delete this message</button>
         <hr />
-    </div>
+    </div>-->
 
     <p nf-text="'Here is a message for you: ' + message"></p>
 
@@ -33,6 +34,9 @@
     Last name: <input nf-value="lastName" />
     <p nf-text="'Hello, ' + firstName + ' ' + lastName"></p>
     <button nf-click="changeName">Change Name</button>
+
+    <p nf-class="{ red: true }">Red?</p>
+    <p nf-style="{ 'font-weight': 'bold', 'font-size': '20px' }">Big and Bold?</p>
 
     <div nf-if="firstName === 'Nathan' && lastName === 'Friend'">
         <p>Hello, creator.</p>
@@ -55,6 +59,6 @@
     <script type="text/javascript" src="lib/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="../src/nfjs-0.0.1.js"></script>
     <script type="text/javascript" src="lib/moment.js"></script>
-    <script type="text/javascript" src="demo.js"></script>
+    <script type="text/javascript" src="test.js"></script>
 </body>
 </html>

@@ -1,8 +1,6 @@
 ﻿function DemoViewModel() {
     var _this = this;
 
-    //_this.messages = ['Does this work?', 'Hello world!', 'Nathan Friend'];
-
     _this.messages = ['Does this work?', 'Hello world!', 'Nathan Friend'];
     _this.deleteMessage = function (messageToDelete) {
         var indexToDelete = _this.messages.indexOf(messageToDelete);
