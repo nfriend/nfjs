@@ -61,7 +61,7 @@ class NF {
     public static addOrReplaceDirective(directive: typeof NFJS.Directives.DirectiveBase) {
         for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
             if (NFJS.Directives.allDirectives[i].name === directive.name) {
-                delete NFJS.Directives.allDirectives[i];
+                NFJS.Directives.allDirectives.splice(i, 1);
             }
         }
 

@@ -4,7 +4,7 @@ module NFJS.Directives {
     export class ForEach extends DirectiveBase {
         public static name = 'nf-foreach';
 
-        initialize(element: HTMLElement, value: any) {
+        initialize(element: HTMLElement, value: any, viewModel: ViewModel) {
             var $element = $(element);
             var template = $element.html();
             $element.html('');
@@ -14,30 +14,30 @@ module NFJS.Directives {
                 $element.append(templatedElements);
                 templatedElements.each((index, innerElement) => {
                     if (typeof value[i] === 'object') {
-                        var viewModel: any = value[i];
+                        var bindingContext: any = value[i];
                     } else {
-                        var viewModel: any = {};
+                        var bindingContext: any = {};
                     }
 
                     // add properties to this child's binding context
-                    viewModel['$data'] = value[i];
-                    viewModel['$index'] = i;
-                    viewModel['$prev'] = value[i - 1];
-                    viewModel['$next'] = value[i + 1];
-                    viewModel['$isFirst'] = i === 0;
-                    viewModel['$isLast'] = i === value.length - 1;
-                    viewModel['$parent'] = value;
+                    bindingContext['$data'] = value[i];
+                    bindingContext['$index'] = i;
+                    bindingContext['$prev'] = value[i - 1];
+                    bindingContext['$next'] = value[i + 1];
+                    bindingContext['$isFirst'] = i === 0;
+                    bindingContext['$isLast'] = i === value.length - 1;
+                    bindingContext['$parent'] = viewModel;
 
-                    Parser.parseElementAndChildren(viewModel, innerElement);
+                    Parser.parseElementAndChildren(bindingContext, innerElement);
 
                     // delete these binding-only properties from our ViewModel
-                    delete viewModel['$data'];
-                    delete viewModel['$index'];
-                    delete viewModel['$prev'];
-                    delete viewModel['$next'];
-                    delete viewModel['$isFirst'];
-                    delete viewModel['$isLast'];
-                    delete viewModel['$parent'];
+                    bindingContext['$data'] = undefined;
+                    bindingContext['$index'] = undefined;
+                    bindingContext['$prev'] = undefined;
+                    bindingContext['$next'] = undefined;
+                    bindingContext['$isFirst'] = undefined;
+                    bindingContext['$isLast'] = undefined;
+                    bindingContext['$parent'] = undefined;
                 });
             }
         }

@@ -48,7 +48,7 @@ var NF = (function () {
     NF.addOrReplaceDirective = function (directive) {
         for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
             if (NFJS.Directives.allDirectives[i].name === directive.name) {
-                delete NFJS.Directives.allDirectives[i];
+                NFJS.Directives.allDirectives.splice(i, 1);
             }
         }
         NFJS.Directives.allDirectives.push(directive);
@@ -117,7 +117,21 @@ var NFJS;
             Click.prototype.initialize = function (element, value) {
                 var $element = $(element);
                 var template = $element.click(function (e) {
-                    value($element, e);
+                    if (typeof value === 'function') {
+                        value($element, e);
+                    }
+                    else {
+                        var handler = value.handler, params = value.params;
+                        if (typeof handler === 'undefined' || typeof params === 'undefined') {
+                            throw '';
+                        }
+                        var evalString = 'handler(';
+                        for (var i = 0; i < params.length; i++) {
+                            evalString += 'params[' + i + ']';
+                            evalString += i === params.length - 1 ? ');' : ', ';
+                        }
+                        eval(evalString);
+                    }
                 });
             };
             Click.prototype.update = function (element, value) {
@@ -166,7 +180,7 @@ var NFJS;
                 _super.apply(this, arguments);
                 this.controlsDescendantBindings = true;
             }
-            ForEach.prototype.initialize = function (element, value) {
+            ForEach.prototype.initialize = function (element, value, viewModel) {
                 var $element = $(element);
                 var template = $element.html();
                 $element.html('');
@@ -175,28 +189,28 @@ var NFJS;
                     $element.append(templatedElements);
                     templatedElements.each(function (index, innerElement) {
                         if (typeof value[i] === 'object') {
-                            var viewModel = value[i];
+                            var bindingContext = value[i];
                         }
                         else {
-                            var viewModel = {};
+                            var bindingContext = {};
                         }
                         // add properties to this child's binding context
-                        viewModel['$data'] = value[i];
-                        viewModel['$index'] = i;
-                        viewModel['$prev'] = value[i - 1];
-                        viewModel['$next'] = value[i + 1];
-                        viewModel['$isFirst'] = i === 0;
-                        viewModel['$isLast'] = i === value.length - 1;
-                        viewModel['$parent'] = value;
-                        NFJS.Parser.parseElementAndChildren(viewModel, innerElement);
+                        bindingContext['$data'] = value[i];
+                        bindingContext['$index'] = i;
+                        bindingContext['$prev'] = value[i - 1];
+                        bindingContext['$next'] = value[i + 1];
+                        bindingContext['$isFirst'] = i === 0;
+                        bindingContext['$isLast'] = i === value.length - 1;
+                        bindingContext['$parent'] = viewModel;
+                        NFJS.Parser.parseElementAndChildren(bindingContext, innerElement);
                         // delete these binding-only properties from our ViewModel
-                        delete viewModel['$data'];
-                        delete viewModel['$index'];
-                        delete viewModel['$prev'];
-                        delete viewModel['$next'];
-                        delete viewModel['$isFirst'];
-                        delete viewModel['$isLast'];
-                        delete viewModel['$parent'];
+                        bindingContext['$data'] = undefined;
+                        bindingContext['$index'] = undefined;
+                        bindingContext['$prev'] = undefined;
+                        bindingContext['$next'] = undefined;
+                        bindingContext['$isFirst'] = undefined;
+                        bindingContext['$isLast'] = undefined;
+                        bindingContext['$parent'] = undefined;
                     });
                 }
             };
@@ -398,11 +412,11 @@ var NFJS;
         }
         Parser.parseElementAndChildren = function (viewModel, rootElement) {
             var _this = this;
-            var shouldProcessChildBindings = true;
+            var shouldProcessChildBindings = true, $rootElement = $(rootElement);
             for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
                 var currentDirective = NFJS.Directives.allDirectives[i];
-                if (rootElement.hasAttribute && rootElement.hasAttribute(currentDirective.name)) {
-                    var $rootElement = $(rootElement), initialize = false, directiveInstance = ($rootElement.data(currentDirective.name));
+                if ($rootElement.is('[' + currentDirective.name + ']')) {
+                    var initialize = false, directiveInstance = ($rootElement.data(currentDirective.name));
                     if (!directiveInstance) {
                         directiveInstance = new currentDirective();
                         $rootElement.data(currentDirective.name, directiveInstance);
@@ -415,7 +429,7 @@ var NFJS;
                 }
             }
             if (shouldProcessChildBindings) {
-                $(rootElement).children().each(function (i, elem) {
+                $rootElement.children().each(function (i, elem) {
                     _this.parseElementAndChildren(viewModel, elem);
                 });
             }
@@ -433,7 +447,7 @@ var NFJS;
             eval("with (viewModel) { \
                     computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
                 }");
-            delete viewModel['$data'];
+            viewModel['$data'] = undefined;
             if (viewModel._observer) {
                 viewModel._observer.stopTrackingDependencies();
             }

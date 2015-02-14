@@ -6,13 +6,14 @@
 
         public static parseElementAndChildren(viewModel: ViewModel, rootElement: Element) {
 
-            var shouldProcessChildBindings = true;
+            var shouldProcessChildBindings = true,
+                $rootElement = $(rootElement);
+
             for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
                 var currentDirective = NFJS.Directives.allDirectives[i];
-                if (rootElement.hasAttribute && rootElement.hasAttribute(currentDirective.name)) {
+                if ($rootElement.is('[' + currentDirective.name + ']')) {
 
-                    var $rootElement = $(rootElement),
-                        initialize = false,
+                    var initialize = false,
                         directiveInstance = <NFJS.Directives.DirectiveBase>($rootElement.data(currentDirective.name));
 
                     if (!directiveInstance) {
@@ -30,7 +31,7 @@
             }
 
             if (shouldProcessChildBindings) {
-                $(rootElement).children().each((i, elem) => {
+                $rootElement.children().each((i, elem) => {
                     this.parseElementAndChildren(viewModel, elem);
                 });
             }
@@ -58,7 +59,7 @@
                 }"
                 );
 
-            delete viewModel['$data'];
+            viewModel['$data'] = undefined;
 
             if (viewModel._observer) {
                 viewModel._observer.stopTrackingDependencies();
