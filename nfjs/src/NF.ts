@@ -27,7 +27,8 @@ class NF {
             NFJS.Directives.Click,
             NFJS.Directives.Event,
             NFJS.Directives.Value,
-            NFJS.Directives.Template
+            NFJS.Directives.Template,
+            NFJS.Directives.If
         ]
         for (var i = 0; i < defaultBindings.length; i++) {
             var bindingAlreadyExists = false;

@@ -5,7 +5,15 @@
 </head>
 <body>
     <div nf-foreach="messages">
-        <p nf-text="messages[0]"></p>
+        <p nf-if="$isFirst">This is the first message</p>
+        <p nf-if="$isLast">This is the last message</p>
+        <p nf-text="'Message #' + ($index + 1) + ': ' + $data"></p>
+        <p nf-text="'previous message: ' + $prev"></p>
+        <p nf-text="'next message: ' + $next"></p>
+        <p nf-text="'parent length:' + $parent.length"></p>
+        <p nf-text="'isFirst:' + $isFirst"></p>
+        <p nf-text="'isLast:' + $isLast"></p>
+        <hr />
     </div>
 
     <p nf-text="'Here is a message for you: ' + message"></p>

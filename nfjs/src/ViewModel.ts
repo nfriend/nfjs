@@ -2,7 +2,7 @@
     'use strict';
 
     export interface ViewModel {
-        _data: any;
-        _observer: Observer;
+        _data?: any;
+        _observer?: Observer;
     }
 } 

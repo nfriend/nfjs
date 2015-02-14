@@ -18,7 +18,8 @@ var NF = (function () {
             NFJS.Directives.Click,
             NFJS.Directives.Event,
             NFJS.Directives.Value,
-            NFJS.Directives.Template
+            NFJS.Directives.Template,
+            NFJS.Directives.If
         ];
         for (var i = 0; i < defaultBindings.length; i++) {
             var bindingAlreadyExists = false;
@@ -170,7 +171,33 @@ var NFJS;
                 var template = $element.html();
                 $element.html('');
                 for (var i = 0; i < value.length; i++) {
-                    $element.append(template);
+                    var templatedElements = $(template);
+                    $element.append(templatedElements);
+                    templatedElements.each(function (index, innerElement) {
+                        if (typeof value[i] === 'object') {
+                            var viewModel = value[i];
+                        }
+                        else {
+                            var viewModel = {};
+                        }
+                        // add properties to this child's binding context
+                        viewModel['$data'] = value[i];
+                        viewModel['$index'] = i;
+                        viewModel['$prev'] = value[i - 1];
+                        viewModel['$next'] = value[i + 1];
+                        viewModel['$isFirst'] = i === 0;
+                        viewModel['$isLast'] = i === value.length - 1;
+                        viewModel['$parent'] = value;
+                        NFJS.Parser.parseElementAndChildren(viewModel, innerElement);
+                        // delete these binding-only properties from our ViewModel
+                        delete viewModel['$data'];
+                        delete viewModel['$index'];
+                        delete viewModel['$prev'];
+                        delete viewModel['$next'];
+                        delete viewModel['$isFirst'];
+                        delete viewModel['$isLast'];
+                        delete viewModel['$parent'];
+                    });
                 }
             };
             ForEach.prototype.update = function (element, value) {
@@ -179,6 +206,39 @@ var NFJS;
             return ForEach;
         })(Directives.DirectiveBase);
         Directives.ForEach = ForEach;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var If = (function (_super) {
+            __extends(If, _super);
+            function If() {
+                _super.apply(this, arguments);
+            }
+            If.prototype.initialize = function (element, value) {
+                var $element = $(element);
+                this.template = $element.html();
+                $element.html('');
+            };
+            If.prototype.update = function (element, value, viewModel) {
+                var $element = $(element);
+                if (value) {
+                    $element.html(this.template);
+                    $element.children().each(function (index, innerElement) {
+                        NFJS.Parser.parseElementAndChildren(viewModel, innerElement);
+                    });
+                }
+                else {
+                    $element.html('');
+                }
+            };
+            If.name = 'nf-if';
+            return If;
+        })(Directives.DirectiveBase);
+        Directives.If = If;
     })(Directives = NFJS.Directives || (NFJS.Directives = {}));
 })(NFJS || (NFJS = {}));
 /// <reference path="DirectiveBase.ts" />
@@ -338,31 +398,45 @@ var NFJS;
         }
         Parser.parseElementAndChildren = function (viewModel, rootElement) {
             var _this = this;
+            var shouldProcessChildBindings = true;
             for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
                 var currentDirective = NFJS.Directives.allDirectives[i];
-                if (rootElement.hasAttribute(currentDirective.name)) {
+                if (rootElement.hasAttribute && rootElement.hasAttribute(currentDirective.name)) {
                     var $rootElement = $(rootElement), initialize = false, directiveInstance = ($rootElement.data(currentDirective.name));
                     if (!directiveInstance) {
                         directiveInstance = new currentDirective();
                         $rootElement.data(currentDirective.name, directiveInstance);
                         initialize = true;
                     }
+                    if (directiveInstance.controlsDescendantBindings) {
+                        shouldProcessChildBindings = false;
+                    }
                     Parser.parseDirectiveForElement(directiveInstance, rootElement, viewModel, initialize);
                 }
             }
-            $(rootElement).children().each(function (i, elem) {
-                _this.parseElementAndChildren(viewModel, elem);
-            });
+            if (shouldProcessChildBindings) {
+                $(rootElement).children().each(function (i, elem) {
+                    _this.parseElementAndChildren(viewModel, elem);
+                });
+            }
         };
         Parser.parseDirectiveForElement = function (directive, element, viewModel, initialize) {
             var directiveExpression = element.getAttribute(directive.constructor.name), $element = $(element), computedExpression, directive;
-            viewModel._observer.beginTrackingDependencies(element, directive);
+            if (typeof viewModel['$data'] === 'undefined') {
+                viewModel['$data'] = viewModel;
+            }
+            if (viewModel._observer) {
+                viewModel._observer.beginTrackingDependencies(element, directive);
+            }
             // TypeScript doesn't allow "with"... or does it.  
             // TODO: make a proper expression evaluater. This makes me die a little bit inside.
             eval("with (viewModel) { \
                     computedExpression = eval('(function() { return ' + directiveExpression + '; })()'); \
                 }");
-            viewModel._observer.stopTrackingDependencies();
+            delete viewModel['$data'];
+            if (viewModel._observer) {
+                viewModel._observer.stopTrackingDependencies();
+            }
             if (initialize) {
                 directive._triggerInitialize(element, computedExpression, viewModel, directiveExpression);
             }

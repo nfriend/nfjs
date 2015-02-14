@@ -7,8 +7,7 @@
         update(element: Element, value: any, viewModel: ViewModel) { }
         controlsDescendantBindings = false;
 
-        setValue = (newValue: any): void => {
-        }
+        setValue = (newValue: any): void => { }
 
         _triggerInitialize(element: Element, value: any, viewModel: ViewModel, directiveExpression: string) {
             this._updateSetValueFunction(viewModel, directiveExpression);
