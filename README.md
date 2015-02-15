@@ -54,11 +54,8 @@ function SimpleText() {
 SimpleText.directiveName = 'nf-simpletext';
 
 // TODO: do this automatically inside the `addOrReplaceDirective` method?
-SimpleText.prototype = NFJS.Directives.BaseDirective;
-````
+SimpleText.prototype = new NFJS.Directives.BaseDirective();
 
-Before using a custom directive, be sure to register it:
-
-```` JavaScript
+// before using a custom directive, be sure to register it:
 NF.addorReplaceDirective(SimpleText);
 ````
