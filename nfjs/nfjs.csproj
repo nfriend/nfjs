@@ -61,7 +61,6 @@
   <ItemGroup>
     <Content Include="demo\demo.css" />
     <Content Include="demo\demo.js" />
-    <Content Include="demo\test.html" />
     <Content Include="demo\index.html" />
     <Content Include="demo\lib\bootstrap\bootstrap.min.css" />
     <Content Include="demo\lib\font-awesome-4.3.0\css\font-awesome.css" />
