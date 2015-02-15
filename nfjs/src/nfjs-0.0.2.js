@@ -12,7 +12,7 @@ var NF = (function () {
         }
         this.baseViewModel = viewModel;
         // add default bindings, if they haven't already been defined
-        var defaultBindings = [
+        [
             NFJS.Directives.ForEach,
             NFJS.Directives.Text,
             NFJS.Directives.Click,
@@ -22,18 +22,17 @@ var NF = (function () {
             NFJS.Directives.If,
             NFJS.Directives.Class,
             NFJS.Directives.Style,
-        ];
-        for (var i = 0; i < defaultBindings.length; i++) {
+        ].forEach(function (directive) {
             var bindingAlreadyExists = false;
             for (var j = 0; j < NFJS.Directives.allDirectives.length; j++) {
-                if (NFJS.Directives.allDirectives[j].directiveName === defaultBindings[i].directiveName) {
+                if (NFJS.Directives.allDirectives[j].directiveName === directive.directiveName) {
                     bindingAlreadyExists = true;
                 }
             }
             if (!bindingAlreadyExists) {
-                NF.addOrReplaceDirective(defaultBindings[i]);
+                NF.addOrReplaceDirective(directive);
             }
-        }
+        });
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);
         if (rootElementId) {
@@ -114,35 +113,6 @@ var NFJS;
 (function (NFJS) {
     var Directives;
     (function (Directives) {
-        var Style = (function (_super) {
-            __extends(Style, _super);
-            function Style() {
-                _super.apply(this, arguments);
-                this.lastStyleValue = {};
-            }
-            Style.prototype.update = function (element, value, viewModel) {
-                var $element = $(element);
-                $element.css(value);
-                var styleEraser = {};
-                for (var cssRule in this.lastStyleValue) {
-                    if (!(cssRule in value)) {
-                        styleEraser[cssRule] = '';
-                    }
-                }
-                $element.css(styleEraser);
-                this.lastStyleValue = value;
-            };
-            Style.directiveName = 'nf-style';
-            return Style;
-        })(Directives.DirectiveBase);
-        Directives.Style = Style;
-    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
-})(NFJS || (NFJS = {}));
-/// <reference path="DirectiveBase.ts" />
-var NFJS;
-(function (NFJS) {
-    var Directives;
-    (function (Directives) {
         var Class = (function (_super) {
             __extends(Class, _super);
             function Class() {
@@ -187,147 +157,6 @@ var NFJS;
 (function (NFJS) {
     var Directives;
     (function (Directives) {
-        var If = (function (_super) {
-            __extends(If, _super);
-            function If() {
-                _super.apply(this, arguments);
-            }
-            If.prototype.initialize = function (element, value) {
-                var $element = $(element);
-                this.template = $element.html();
-                $element.html('');
-            };
-            If.prototype.update = function (element, value, viewModel) {
-                var $element = $(element);
-                if (value) {
-                    $element.html(this.template);
-                    $element.children().each(function (index, innerElement) {
-                        NFJS.Parser.parseElementAndChildren(viewModel, innerElement);
-                    });
-                }
-                else {
-                    $element.html('');
-                }
-            };
-            If.directiveName = 'nf-if';
-            return If;
-        })(Directives.DirectiveBase);
-        Directives.If = If;
-    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
-})(NFJS || (NFJS = {}));
-/// <reference path="DirectiveBase.ts" />
-var NFJS;
-(function (NFJS) {
-    var Directives;
-    (function (Directives) {
-        var Template = (function (_super) {
-            __extends(Template, _super);
-            function Template() {
-                _super.apply(this, arguments);
-            }
-            Template.prototype.initialize = function (element, value) {
-                var _this = this;
-                var replaceContainer = value.replaceContainer || false;
-                if (value.id) {
-                    var template = $('#' + value.id).html();
-                    if (!template) {
-                        throw 'Unable to find template with id of "' + value.id + "'";
-                    }
-                    this.applyTemplate(element, template, replaceContainer);
-                }
-                else if (value.url) {
-                    throw 'Not yet implemented!  This binding will need to control its child\'s binding context';
-                    $.ajax({
-                        type: 'GET',
-                        url: value.url,
-                        success: function (template) {
-                            _this.applyTemplate(element, template, replaceContainer);
-                        },
-                        error: function () {
-                            throw 'Unable to get template at url: "' + value.url + '"';
-                        }
-                    });
-                }
-                else {
-                    throw 'The "Template" binding expects an object with either an "id" property or a "url" property';
-                }
-            };
-            Template.prototype.update = function (element, value) {
-            };
-            Template.prototype.applyTemplate = function (containerElement, template, replaceContainer) {
-                var $containerElement = $(containerElement);
-                $containerElement.html(template);
-                if (replaceContainer) {
-                    throw 'The replaceContainer parameters is not yet implemented';
-                    $containerElement.contents().unwrap();
-                }
-            };
-            Template.directiveName = 'nf-template';
-            return Template;
-        })(Directives.DirectiveBase);
-        Directives.Template = Template;
-    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
-})(NFJS || (NFJS = {}));
-/// <reference path="DirectiveBase.ts" />
-var NFJS;
-(function (NFJS) {
-    var Directives;
-    (function (Directives) {
-        var Value = (function (_super) {
-            __extends(Value, _super);
-            function Value() {
-                _super.apply(this, arguments);
-            }
-            Value.prototype.initialize = function (element, value) {
-                var _this = this;
-                var $element = $(element);
-                $element.val(value);
-                var template = $element.on('input', function (e) {
-                    _this.setValue($element.val());
-                });
-            };
-            Value.prototype.update = function (element, value) {
-                var $element = $(element);
-                $element.val(value);
-            };
-            Value.directiveName = 'nf-value';
-            return Value;
-        })(Directives.DirectiveBase);
-        Directives.Value = Value;
-    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
-})(NFJS || (NFJS = {}));
-/// <reference path="DirectiveBase.ts" />
-var NFJS;
-(function (NFJS) {
-    var Directives;
-    (function (Directives) {
-        var Event = (function (_super) {
-            __extends(Event, _super);
-            function Event() {
-                _super.apply(this, arguments);
-            }
-            Event.prototype.initialize = function (element, value) {
-                if (!(value.event && value.handler)) {
-                    throw '"Event" binding must be given an object with both a "event" property and a "handler" property';
-                }
-                var $element = $(element);
-                var template = $element.on(value.event, function (e) {
-                    value.handler($element, e);
-                });
-            };
-            Event.prototype.update = function (element, value) {
-            };
-            Event.directiveName = 'nf-event';
-            return Event;
-        })(Directives.DirectiveBase);
-        Directives.Event = Event;
-    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
-})(NFJS || (NFJS = {}));
-/// <reference path="DirectiveBase.ts" />
-var NFJS;
-(function (NFJS) {
-    var Directives;
-    (function (Directives) {
         var Click = (function (_super) {
             __extends(Click, _super);
             function Click() {
@@ -359,6 +188,33 @@ var NFJS;
             return Click;
         })(Directives.DirectiveBase);
         Directives.Click = Click;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var Event = (function (_super) {
+            __extends(Event, _super);
+            function Event() {
+                _super.apply(this, arguments);
+            }
+            Event.prototype.initialize = function (element, value) {
+                if (!(value.event && value.handler)) {
+                    throw '"Event" binding must be given an object with both a "event" property and a "handler" property';
+                }
+                var $element = $(element);
+                var template = $element.on(value.event, function (e) {
+                    value.handler($element, e);
+                });
+            };
+            Event.prototype.update = function (element, value) {
+            };
+            Event.directiveName = 'nf-event';
+            return Event;
+        })(Directives.DirectiveBase);
+        Directives.Event = Event;
     })(Directives = NFJS.Directives || (NFJS.Directives = {}));
 })(NFJS || (NFJS = {}));
 /// <reference path="DirectiveBase.ts" />
@@ -422,6 +278,121 @@ var NFJS;
 (function (NFJS) {
     var Directives;
     (function (Directives) {
+        var If = (function (_super) {
+            __extends(If, _super);
+            function If() {
+                _super.apply(this, arguments);
+            }
+            If.prototype.initialize = function (element, value) {
+                var $element = $(element);
+                this.template = $element.html();
+                $element.html('');
+            };
+            If.prototype.update = function (element, value, viewModel) {
+                var $element = $(element);
+                if (value) {
+                    $element.html(this.template);
+                    $element.children().each(function (index, innerElement) {
+                        NFJS.Parser.parseElementAndChildren(viewModel, innerElement);
+                    });
+                }
+                else {
+                    $element.html('');
+                }
+            };
+            If.directiveName = 'nf-if';
+            return If;
+        })(Directives.DirectiveBase);
+        Directives.If = If;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var Style = (function (_super) {
+            __extends(Style, _super);
+            function Style() {
+                _super.apply(this, arguments);
+                this.lastStyleValue = {};
+            }
+            Style.prototype.update = function (element, value, viewModel) {
+                var $element = $(element);
+                $element.css(value);
+                var styleEraser = {};
+                for (var cssRule in this.lastStyleValue) {
+                    if (!(cssRule in value)) {
+                        styleEraser[cssRule] = '';
+                    }
+                }
+                $element.css(styleEraser);
+                this.lastStyleValue = value;
+            };
+            Style.directiveName = 'nf-style';
+            return Style;
+        })(Directives.DirectiveBase);
+        Directives.Style = Style;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var Template = (function (_super) {
+            __extends(Template, _super);
+            function Template() {
+                _super.apply(this, arguments);
+            }
+            Template.prototype.initialize = function (element, value) {
+                var _this = this;
+                var replaceContainer = value.replaceContainer || false;
+                if (value.id) {
+                    var template = $('#' + value.id).html();
+                    if (!template) {
+                        throw 'Unable to find template with id of "' + value.id + "'";
+                    }
+                    this.applyTemplate(element, template, replaceContainer);
+                }
+                else if (value.url) {
+                    throw 'Not yet implemented!  This binding will need to control its child\'s binding context';
+                    $.ajax({
+                        type: 'GET',
+                        url: value.url,
+                        success: function (template) {
+                            _this.applyTemplate(element, template, replaceContainer);
+                        },
+                        error: function () {
+                            throw 'Unable to get template at url: "' + value.url + '"';
+                        }
+                    });
+                }
+                else {
+                    throw 'The "Template" binding expects an object with either an "id" property or a "url" property';
+                }
+            };
+            Template.prototype.update = function (element, value) {
+            };
+            Template.prototype.applyTemplate = function (containerElement, template, replaceContainer) {
+                var $containerElement = $(containerElement);
+                $containerElement.html(template);
+                if (replaceContainer) {
+                    throw 'The replaceContainer parameters is not yet implemented';
+                    $containerElement.contents().unwrap();
+                }
+            };
+            Template.directiveName = 'nf-template';
+            return Template;
+        })(Directives.DirectiveBase);
+        Directives.Template = Template;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
         var Text = (function (_super) {
             __extends(Text, _super);
             function Text() {
@@ -436,6 +407,34 @@ var NFJS;
             return Text;
         })(Directives.DirectiveBase);
         Directives.Text = Text;
+    })(Directives = NFJS.Directives || (NFJS.Directives = {}));
+})(NFJS || (NFJS = {}));
+/// <reference path="DirectiveBase.ts" />
+var NFJS;
+(function (NFJS) {
+    var Directives;
+    (function (Directives) {
+        var Value = (function (_super) {
+            __extends(Value, _super);
+            function Value() {
+                _super.apply(this, arguments);
+            }
+            Value.prototype.initialize = function (element, value) {
+                var _this = this;
+                var $element = $(element);
+                $element.val(value);
+                var template = $element.on('input', function (e) {
+                    _this.setValue($element.val());
+                });
+            };
+            Value.prototype.update = function (element, value) {
+                var $element = $(element);
+                $element.val(value);
+            };
+            Value.directiveName = 'nf-value';
+            return Value;
+        })(Directives.DirectiveBase);
+        Directives.Value = Value;
     })(Directives = NFJS.Directives || (NFJS.Directives = {}));
 })(NFJS || (NFJS = {}));
 var NFJS;

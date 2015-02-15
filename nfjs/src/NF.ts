@@ -24,7 +24,7 @@ class NF {
         this.baseViewModel = viewModel;
 
         // add default bindings, if they haven't already been defined
-        var defaultBindings: typeof NFJS.Directives.DirectiveBase[] = [
+        [
             NFJS.Directives.ForEach,
             NFJS.Directives.Text,
             NFJS.Directives.Click,
@@ -34,19 +34,18 @@ class NF {
             NFJS.Directives.If,
             NFJS.Directives.Class,
             NFJS.Directives.Style,
-        ]
-        for (var i = 0; i < defaultBindings.length; i++) {
+        ].forEach((directive) => {
             var bindingAlreadyExists = false;
             for (var j = 0; j < NFJS.Directives.allDirectives.length; j++) {
-                if (NFJS.Directives.allDirectives[j].directiveName === defaultBindings[i].directiveName) {
+                if (NFJS.Directives.allDirectives[j].directiveName === directive.directiveName) {
                     bindingAlreadyExists = true;
                 }
             }
 
             if (!bindingAlreadyExists) {
-                NF.addOrReplaceDirective(defaultBindings[i]);
+                NF.addOrReplaceDirective(directive);
             }
-        }
+        });
 
         // prepare the ViewModel with getters/setters to allow for property change notification
         NFJS.ViewModelPreparer.prepare(this.baseViewModel);

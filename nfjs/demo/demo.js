@@ -44,6 +44,11 @@
     }
 
     addTodo = function () {
+        // if string is empty or just whitespace, don't add a new todo
+        if (! (/\S/.test(_this.newTodoText))) {
+            return;
+        }
+
         _this.todos.push({
             isComplete: false,
             text: _this.newTodoText
