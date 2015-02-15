@@ -34,10 +34,13 @@ Here is a message for you: Hello world!
 
 ## Custom directives
 
-Custom directives are created by inheriting from the [NFJS.Directives.BaseDirective](nfjs/src/directives/DirectiveBase.ts) class and registering the new class with the `NF.addOrReplaceDirective` function.
+Custom directives can be created by inheriting from the [NFJS.Directives.BaseDirective](nfjs/src/directives/DirectiveBase.ts) class and registering the new class with the `NF.addOrReplaceDirective` function.
+
+##### The `initialize` callback
 
 The `initialize` method is called when the directive is first applied to an element in the view.  The `initialize` method is passed a reference to the current element and the evaluated value of the directive's expression.  This method should be used to set up the element's initial state and add DOM handlers to react to changes in the view.
 
+##### The `update` callback
 The `update` method is called when the directive's dependent data in the ViewModel changes.  This method is passed the same parameters as the `initialize` method.  This method should be used to update the DOM to reflect the changes in the ViewModel.  To write changes back to the ViewModel, use the `BaseDirective.setValue` method.
 
 For example, here's a stripped-down implementation of the `nf-text` directive:
