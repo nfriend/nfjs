@@ -34,7 +34,7 @@ Here is a message for you: Hello world!
 
 ## Custom directives
 
-Custom directives are created by inheriting from the [NFJS.Directives.BaseDirective](nfjs/src/directives/Directive.ts) class and registering the new class with the `NF.addOrReplaceDirective` function.
+Custom directives are created by inheriting from the [NFJS.Directives.BaseDirective](nfjs/src/directives/DirectiveBase.ts) class and registering the new class with the `NF.addOrReplaceDirective` function.
 
 The `initialize` method is called when the directive is first applied to an element in the view.  The `initialize` method is passed a reference to the current element and the evaluated value of the directive's expression.  This method should be used to set up the element's initial state and add DOM handlers to react to changes in the view.
 
