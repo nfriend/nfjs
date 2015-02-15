@@ -10,17 +10,12 @@
     margin-top: 20px;
 }
 
-    .add-todo-container .add-todo-input {
-        width: 200px;
-    }
-
 .todo-container {
     margin-top: 20px;
 }
 
     .todo-container .todo-item {
         padding: 6px;
-        max-width: 321px;
         margin-left: -15px;
         border-radius: 4px;
     }
@@ -88,4 +83,30 @@
 .cleared {
     clear: both !important;
     float: none !important;
+}
+
+@media (min-width: 768px) {
+    .add-todo-container .add-todo-input {
+        width: 200px;
+    }
+
+    .todo-container .todo-item {
+        max-width: 321px;
+    }
+}
+
+@media (max-width: 767px) {
+    .add-todo-container .add-todo-input {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .add-todo-button {
+        width: 100%;
+    }
+
+    .container {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
 }
