@@ -55,6 +55,7 @@
         });
 
         _this.newTodoText = '';
+        recalculateIncompleteCount();
     }
 
     recalculateIncompleteCount = function () {
