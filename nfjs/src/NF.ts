@@ -16,9 +16,7 @@ class NF {
     public static run(viewModel: any, rootElementId?: string): void {
         // TODO: handle no-conflict jQuery
         if (typeof $ === 'undefined') {
-            throw 'jQuery not loaded! NF.js requires jQuery >= 2.0.0.'
-        } else if (parseInt($.fn.jquery.charAt(0), 10) < 2) {
-            throw 'An old version of jQuery was loaded! NF.js requires jQuery >= 2.0.0.'
+            throw 'jQuery not loaded! NF.js relies requires on jQuery to run.'
         }
 
         this.baseViewModel = viewModel;

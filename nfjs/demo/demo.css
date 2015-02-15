@@ -16,20 +16,14 @@
 
     .todo-container .todo-item {
         padding: 6px;
-        margin-left: -15px;
         border-radius: 4px;
     }
 
         .todo-container .todo-item .grip {
-            visibility: hidden;
             margin-top: 2px;
             margin-right: 7px;
             margin-left: 1px;
             color: #AAAAAA;
-        }
-
-        .todo-container .todo-item:hover .grip {
-            visibility: visible;
         }
 
         .todo-container .todo-item .todo-text.completed {
@@ -38,7 +32,7 @@
         }
 
         .todo-container .todo-item:hover {
-            background-color: #f2f3f8;
+            background-color: #f2f2f2;
             cursor: pointer;
         }
 
@@ -64,11 +58,8 @@
             }
 
         .todo-container .todo-item .close-button {
-            visibility: hidden;
             float: right;
             padding: 5px;
-            margin: -5px;
-            margin-top: -3px;
             color: #AAAAAA;
         }
 
@@ -86,16 +77,43 @@
 }
 
 @media (min-width: 768px) {
+    .todo-container .todo-item .grip {
+        visibility: hidden;
+    }
+
+    .todo-container .todo-item:hover .grip {
+        visibility: visible;
+    }
+
     .add-todo-container .add-todo-input {
         width: 200px;
     }
 
     .todo-container .todo-item {
         max-width: 321px;
+        margin-left: -15px;
     }
+
+        .todo-container .todo-item .close-button {
+            visibility: hidden;
+            margin: -5px;
+            margin-top: -3px;
+        }
 }
 
 @media (max-width: 767px) {
+    .todo-container .todo-item .grip {
+        visibility: visible;
+    }
+
+    .todo-container .todo-item {
+        background-color: #FAFAFA;
+        margin-bottom: 3px;
+        height: 45px;
+        padding-top: 13px;
+        font-size: 1.2em;
+    }
+
     .add-todo-container .add-todo-input {
         width: 100%;
         margin-bottom: 5px;
@@ -105,8 +123,17 @@
         width: 100%;
     }
 
-    .container {
-        padding-right: 30px;
-        padding-left: 30px;
+    .todo-container .todo-item .close-button {
+        margin-right: 5px;
+        margin-top: -5px;
+    }
+
+    .add-todo-button, .add-todo-input {
+        font-size: 1.4em;
+        height: 45px;
+    }
+
+    .todo-text {
+        margin-top: -1px;
     }
 }

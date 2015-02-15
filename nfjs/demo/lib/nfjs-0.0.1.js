@@ -7,9 +7,6 @@ var NF = (function () {
         if (typeof $ === 'undefined') {
             throw 'jQuery not loaded! NF.js requires jQuery >= 2.0.0.';
         }
-        else if (parseInt($.fn.jquery.charAt(0), 10) < 2) {
-            throw 'An old version of jQuery was loaded! NF.js requires jQuery >= 2.0.0.';
-        }
         this.baseViewModel = viewModel;
         // add default bindings, if they haven't already been defined
         var defaultBindings = [
