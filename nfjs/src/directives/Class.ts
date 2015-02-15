@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Class extends DirectiveBase {
-        public static name = 'nf-class';
+        public static directiveName = 'nf-class';
         private lastStringValue;
         private lastArrayValue;
 

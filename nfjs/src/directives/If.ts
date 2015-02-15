@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class If extends DirectiveBase {
-        public static name = 'nf-if';
+        public static directiveName = 'nf-if';
         private template: string;
 
         initialize(element: HTMLElement, value: any) {

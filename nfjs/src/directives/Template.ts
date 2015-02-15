@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Template extends DirectiveBase {
-        public static name = 'nf-template';
+        public static directiveName = 'nf-template';
 
         initialize(element: HTMLElement, value: any) {
 

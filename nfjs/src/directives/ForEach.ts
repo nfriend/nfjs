@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class ForEach extends DirectiveBase {
-        public static name = 'nf-foreach';
+        public static directiveName = 'nf-foreach';
         private template: string;
 
         initialize(element: HTMLElement, value: any, viewModel: ViewModel) {

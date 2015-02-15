@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Event extends DirectiveBase {
-        public static name = 'nf-event';
+        public static directiveName = 'nf-event';
 
         initialize(element: HTMLElement, value: any) {
 

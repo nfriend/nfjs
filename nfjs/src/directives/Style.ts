@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Style extends DirectiveBase {
-        public static name = 'nf-style';
+        public static directiveName = 'nf-style';
         private lastStyleValue = {};
 
         update(element: HTMLElement, value: any, viewModel: ViewModel) {

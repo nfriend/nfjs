@@ -1,0 +1,73 @@
+﻿#todo-title {
+    margin-top: 40px;
+}
+
+.status {
+    font-style: italic;
+}
+
+.add-todo-container {
+    margin-top: 20px;
+}
+
+.todo-container {
+    margin-top: 20px;
+}
+
+    .todo-container .todo-item {
+        padding: 6px;
+        max-width: 302px;
+    }
+
+        .todo-container .todo-item .todo-text.completed {
+            font-style: italic;
+            text-decoration: line-through;
+        }
+
+        .todo-container .todo-item:hover {
+            background-color: #f2f3f8;
+            cursor: pointer;
+        }
+
+            .todo-container .todo-item:hover .checkmark {
+                color: #1f1f1f;
+            }
+
+        .todo-container .todo-item > * {
+            float: left;
+        }
+
+        .todo-container .todo-item .checkmark {
+            margin-top: 2px;
+            margin-right: 10px;
+            color: #666666;
+            min-width: 15px;
+        }
+
+            .todo-container .todo-item .checkmark:hover {
+                margin-top: 2px;
+                margin-right: 10px;
+                color: #1f1f1f;
+            }
+
+        .todo-container .todo-item .close-button {
+            visibility: hidden;
+            float: right;
+            padding: 5px;
+            margin: -5px;
+            margin-top: -3px;
+        }
+
+        .todo-container .todo-item:hover .close-button {
+            visibility: visible;
+            color: #AAAAAA;
+        }
+
+            .todo-container .todo-item:hover .close-button:hover {
+                color: black;
+            }
+
+.cleared {
+    clear: both !important;
+    float: none !important;
+}

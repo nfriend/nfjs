@@ -38,7 +38,7 @@ class NF {
         for (var i = 0; i < defaultBindings.length; i++) {
             var bindingAlreadyExists = false;
             for (var j = 0; j < NFJS.Directives.allDirectives.length; j++) {
-                if (NFJS.Directives.allDirectives[j].name === defaultBindings[i].name) {
+                if (NFJS.Directives.allDirectives[j].directiveName === defaultBindings[i].directiveName) {
                     bindingAlreadyExists = true;
                 }
             }
@@ -65,7 +65,7 @@ class NF {
 
     public static addOrReplaceDirective(directive: typeof NFJS.Directives.DirectiveBase) {
         for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
-            if (NFJS.Directives.allDirectives[i].name === directive.name) {
+            if (NFJS.Directives.allDirectives[i].directiveName === directive.directiveName) {
                 NFJS.Directives.allDirectives.splice(i, 1);
             }
         }

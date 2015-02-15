@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Value extends DirectiveBase {
-        public static name = 'nf-value';
+        public static directiveName = 'nf-value';
 
         initialize(element: HTMLElement, value: any) {
             var $element = $(element);

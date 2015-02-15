@@ -59,6 +59,14 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="demo\demo.css" />
+    <Content Include="demo\demo.js" />
+    <Content Include="demo\index.html" />
+    <Content Include="demo\lib\bootstrap\bootstrap.min.css" />
+    <Content Include="demo\lib\font-awesome-4.3.0\css\font-awesome.css" />
+    <Content Include="demo\lib\font-awesome-4.3.0\css\font-awesome.min.css" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\fontawesome-webfont.svg" />
+    <Content Include="demo\lib\jquery\jquery-2.1.3.min.js" />
     <Content Include="test\test.css" />
     <Content Include="test\test.js" />
     <Content Include="test\index.html" />
@@ -72,6 +80,37 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\fontawesome-webfont.eot" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\fontawesome-webfont.ttf" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\fontawesome-webfont.woff" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\fontawesome-webfont.woff2" />
+    <Content Include="demo\lib\font-awesome-4.3.0\fonts\FontAwesome.otf" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\animated.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\bordered-pulled.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\core.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\fixed-width.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\font-awesome.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\icons.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\larger.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\list.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\mixins.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\path.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\rotated-flipped.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\stacked.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\less\variables.less" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\font-awesome.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_animated.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_bordered-pulled.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_core.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_fixed-width.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_icons.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_larger.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_list.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_mixins.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_path.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_rotated-flipped.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_stacked.scss" />
+    <Content Include="demo\lib\font-awesome-4.3.0\scss\_variables.scss" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -79,15 +118,13 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="demo\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="src\arrayModifications.ts" />
     <TypeScriptCompile Include="src\directives\allBindings.ts" />
     <TypeScriptCompile Include="src\directives\Style.ts" />
-    <TypeScriptCompile Include="src\directives\Css.ts" />
+    <TypeScriptCompile Include="src\directives\Class.ts" />
     <TypeScriptCompile Include="src\directives\If.ts" />
     <TypeScriptCompile Include="src\directives\Template.ts" />
     <TypeScriptCompile Include="src\directives\Value.ts" />

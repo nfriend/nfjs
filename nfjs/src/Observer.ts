@@ -28,7 +28,7 @@
                 var dependencyIsAlreadyRecorded = false;
                 for (var i = 0; i < this.dependencies[propertyName].length; i++) {
                     var currentDependency = this.dependencies[propertyName][i];
-                    if ((<any>currentDependency.directive.constructor).name === (<any>this.currentElementAndDirective.directive.constructor).name
+                    if ((<any>currentDependency.directive.constructor).directiveName === (<any>this.currentElementAndDirective.directive.constructor).directiveName
                         && currentDependency.element === this.currentElementAndDirective.element) {
 
                         dependencyIsAlreadyRecorded = true;

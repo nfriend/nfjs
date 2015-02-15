@@ -1,7 +1,7 @@
 ﻿module NFJS.Directives {
 
     export class DirectiveBase {
-        public static name: string;
+        public static directiveName: string;
 
         initialize(element: Element, value: any, viewModel: ViewModel) { }
         update(element: Element, value: any, viewModel: ViewModel) { }

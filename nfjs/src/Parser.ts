@@ -11,14 +11,14 @@
 
             for (var i = 0; i < NFJS.Directives.allDirectives.length; i++) {
                 var currentDirective = NFJS.Directives.allDirectives[i];
-                if ($rootElement.is('[' + currentDirective.name + ']')) {
+                if ($rootElement.is('[' + currentDirective.directiveName + ']')) {
 
                     var initialize = false,
-                        directiveInstance = <NFJS.Directives.DirectiveBase>($rootElement.data(currentDirective.name));
+                        directiveInstance = <NFJS.Directives.DirectiveBase>($rootElement.data(currentDirective.directiveName));
 
                     if (!directiveInstance) {
                         directiveInstance = new currentDirective();
-                        $rootElement.data(currentDirective.name, directiveInstance);
+                        $rootElement.data(currentDirective.directiveName, directiveInstance);
                         initialize = true;
                     }
 
@@ -38,7 +38,7 @@
         }
 
         public static parseDirectiveForElement(directive: NFJS.Directives.DirectiveBase, element: Element, viewModel: ViewModel, initialize?: boolean) {
-            var directiveExpression = element.getAttribute((<any>directive.constructor).name),
+            var directiveExpression = element.getAttribute((<any>directive.constructor).directiveName),
                 $element = $(element),
                 computedExpression,
                 directive: NFJS.Directives.DirectiveBase;
@@ -60,7 +60,7 @@
                     }"
                     );
             } catch (e) {
-                var message = 'Unable to process binding "' + (<any>directive.constructor).name + '".The following expression could not be evaluated: ' + directiveExpression;
+                var message = 'Unable to process binding "' + (<any>directive.constructor).directiveName + '".The following expression could not be evaluated: ' + directiveExpression;
                 if (NF.bindingFailureBehavior.toLowerCase() === 'throw') {
                     throw message;
                 } else if (NF.bindingFailureBehavior.toLowerCase() === 'log') {

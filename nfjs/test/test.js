@@ -1,4 +1,4 @@
-﻿function DemoViewModel() {
+﻿function TestViewModel() {
     var _this = this;
 
     _this.messages = ['Does this work?', 'Hello world!', 'Nathan Friend'];
@@ -48,4 +48,4 @@
     calculateAndSetDate();
 }
 
-NF.run(new DemoViewModel());
+NF.run(new TestViewModel());

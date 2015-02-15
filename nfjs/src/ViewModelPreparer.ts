@@ -28,7 +28,7 @@ module NFJS {
 
             // TODO: handle properties specified in ViewModel's prototype
             if (viewModel.hasOwnProperty(property)) {
-                
+
                 var initialValue = viewModel[property];
 
                 // redefine the property with a getter and setter
@@ -60,23 +60,33 @@ module NFJS {
         }
 
         private static augmentArrayMethods(array: Array<any>, viewModel: ViewModel, property: string) {
-            var methods = [
-                'push',
-                'pop',
-                'shift',
-                'unshift',
-                'splice',
-                'sort',
-                'reverse'
-            ];
-            
-            methods.forEach((method) => {
+            ['pop', 'shift', 'sort', 'reverse'].forEach((method) => {
                 array[method] = function () {
                     var returnValue = Array.prototype[method].apply(this, arguments);
                     viewModel._observer.notifyPropertyChanged(property);
                     return returnValue;
                 }
-            });                
+            });
+
+            ['unshift', 'push'].forEach((method) => {
+                array[method] = function () {
+                    var returnValue = Array.prototype[method].apply(this, arguments);
+                    for (var i = 0; i < arguments.length; i++) {
+                        ViewModelPreparer.prepare(arguments[i]);
+                    }
+                    viewModel._observer.notifyPropertyChanged(property);
+                    return returnValue;
+                }
+            });
+
+            array.splice = function () {
+                var returnValue = Array.prototype.splice.apply(this, arguments);
+                for (var i = 2; i < arguments.length; i++) {
+                    ViewModelPreparer.prepare(arguments[i]);
+                }
+                viewModel._observer.notifyPropertyChanged(property);
+                return returnValue;
+            }
         }
     }
 } 

@@ -2,7 +2,7 @@
 
 module NFJS.Directives {
     export class Click extends DirectiveBase {
-        public static name = 'nf-click';
+        public static directiveName = 'nf-click';
 
         initialize(element: HTMLElement, value: any) {
             var $element = $(element);
