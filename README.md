@@ -49,12 +49,10 @@ function SimpleText() {
   };
 }
 
-// TODO: make this happen automatically?
 // directiveName must be a static property on your Directive class
 SimpleText.directiveName = 'nf-simpletext';
-
-// TODO: do this automatically inside the `addOrReplaceDirective` method?
 SimpleText.prototype = new NFJS.Directives.BaseDirective();
+SimpleText.prototype.constructor = SimpleText;
 
 // before using a custom directive, be sure to register it:
 NF.addorReplaceDirective(SimpleText);
