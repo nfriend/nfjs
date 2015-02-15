@@ -31,8 +31,9 @@
             </div>
         </form>
 
-        <div nf-sortable="todos" class="todo-container">
+        <div nf-sortable-foreach="todos" class="todo-container">
             <div class="todo-item" nf-click="{ handler: toggleTodoCompleteStatus, params: [$data] }">
+                <i class="grip fa fa-ellipsis-v"></i>
                 <i class="checkmark fa" nf-class="{ 'fa-check-square-o': $data.isComplete, 'fa-square-o': !$data.isComplete }"></i>
                 <div class="todo-text" nf-text="$data.text" nf-class="{ 'completed': $data.isComplete }"></div>
                 <i class="fa fa-close close-button" nf-click="{ handler: deleteTodo, params: [$data] }"></i>
@@ -43,7 +44,7 @@
     <script src="lib/jquery/jquery-2.1.3.min.js"></script>
     <script src="lib/jquery-ui-1.11.3.custom/jquery-ui.min.js"></script>
     <script src="lib/nfjs-0.0.1.js"></script>
-    <script src="sortable.js"></script>
+    <script src="sortable-foreach.js"></script>
     <script src="demo.js"></script>
 </body>
 </html>

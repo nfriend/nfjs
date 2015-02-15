@@ -1,4 +1,4 @@
-﻿function Sortable() {
+﻿function SortableForeach() {
     var _this = this,
         forEachDirective = new NFJS.Directives.ForEach(),
         lastOrder;
@@ -36,15 +36,17 @@
 
                 // TODO: is there a way to just reorder the existing array instead of creating a new array?
                 _this.setValue(newOrderedArray);
-            }
+            },
+            // TODO: expose this as an option
+            delay: 100
         }).disableSelection();
     }
 
     this.controlsDescendantBindings = true;
 }
 
-Sortable.prototype = new NFJS.Directives.DirectiveBase();
-Sortable.prototype.constructor = Sortable;
-Sortable.directiveName = 'nf-sortable';
+SortableForeach.prototype = new NFJS.Directives.DirectiveBase();
+SortableForeach.prototype.constructor = SortableForeach;
+SortableForeach.directiveName = 'nf-sortable-foreach';
 
-NF.addOrReplaceDirective(Sortable);
+NF.addOrReplaceDirective(SortableForeach);
